@@ -1,0 +1,13 @@
+
+syntax: glob
+*.lst
+*.o
+*.bak
+*.eep
+*.lss
+*.map
+*.sym
+*.elf
+*~
+.dep
+*.hex
