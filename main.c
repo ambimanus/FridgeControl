@@ -18,10 +18,8 @@ int main(void) {
 	char line[64];
 	// Print buffer (32 chars)
 	char buf_s[32];
-	// Real time counter
-	uint32_t *volatile rtc;
-	// RTC change flag
-	uint8_t *volatile rtc_flag;
+	// Current temperature
+	float temperature;
 
 	/****************************
 	 * Init						*
@@ -35,20 +33,31 @@ int main(void) {
 	// Init relais
 	relais_init();
 	// Init clock
-	rtc_init(rtc, rtc_flag);
+	rtc_init();
 
-	// Welcome
+	/****************************
+	 * Startup					*
+	****************************/
+	// Welcome message
 	uart_puts_P(PSTR("\n\r **** FridgeControl ****\n\r"));
+	uart_puts_P(PSTR("\n\r Starting fridge control unit...\n\r"));
+	// Perform first measurement
+	ds18s20_startMeasure();
+	_delay_ms(2000);
+	temperature = ds18s20_readTemperature();
+	// Start fridge control unit
+	basecontroller_init(temperature, rtc_getTime());
+	uart_puts_P(PSTR("   => up and running.\n\r\n\r"));
 
 	/****************************
 	 * Main loop				*
 	 ****************************/
 	while (1) {
 		// Check time
-		if (*rtc_flag) {
-			*rtc_flag = 0;
+		if (rtc_hasChanged()) {
+			rtc_clearFlag();
 			uart_puts_P(PSTR(("Time: ")));
-			sprintf(buf_s, "%lu\n\r", *rtc);
+			sprintf(buf_s, "%lu\n\r", rtc_getTime());
 			uart_puts(buf_s);
 		}
 		// Check for received character

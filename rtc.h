@@ -14,6 +14,9 @@
 
 #define DEBOUNCE	250L		// debounce clock (256Hz = 4msec)
 
-void rtc_init(uint32_t *volatile s, uint8_t *volatile f);
+void rtc_init(void);
+uint8_t rtc_hasChanged(void);
+void rtc_clearFlag(void);
+uint32_t rtc_getTime(void);
 
 #endif /* RTC_H_ */
