@@ -51,14 +51,15 @@
 	}
 #else /* INTERRUPT_ENABLED */
 	// FIFO-Objekte und Puffer für die Ein- und Ausgabe
-
 	#define BUFSIZE_IN  0x40
 	uint8_t inbuf[BUFSIZE_IN];
 	fifo_t infifo;
-
 	#define BUFSIZE_OUT 0x40
 	uint8_t outbuf[BUFSIZE_OUT];
 	fifo_t outfifo;
+
+	// Timeout Flag
+	uint8_t timeout_flag = 0;
 
 	void uart_init() {
 		//uint8_t sreg = SREG;
@@ -137,9 +138,10 @@
 		return fifo_get_nowait (&infifo);
 	}
 
-	uint8_t uart_getc_wait ()
+	uint8_t uart_getc_wait (int16_t timeout)
 	{
-		return fifo_get_wait (&infifo);
+		timeout_flag = 0;
+		return fifo_get_wait (&infifo, timeout);
 	}
 
 	// Einen 0-terminierten String übertragen.
@@ -166,7 +168,7 @@
 	}
 
 	// Einen '\n' terminierten String empfangen
-	void uart_gets( char* Buffer, char firstChar, uint8_t MaxLen )
+	void uart_gets( char* Buffer, char firstChar, uint8_t MaxLen, int16_t timeout )
 	{
 	  uint8_t NextChar;
 	  uint8_t StringLen = 0;
@@ -177,14 +179,24 @@
 									  // Sammle solange Zeichen, bis:
 									  // * entweder das String Ende Zeichen kam
 									  // * oder das aufnehmende Array voll ist
-	  while( NextChar != '\n' && NextChar != '\r' && StringLen < MaxLen - 1 ) {
+	  while (NextChar != '\n' && NextChar != '\r' && NextChar != 0xFF
+			&& StringLen < MaxLen - 1) {
 		*Buffer++ = NextChar;
 		StringLen++;
-		NextChar = uart_getc_wait();
+		NextChar = uart_getc_wait(timeout);
 	  }
 
 									  // Noch ein '\0' anhängen um einen Standard
 									  // C-String daraus zu machen
 	  *Buffer = '\0';
+
+	  // Check timeout
+	  if (NextChar == 0xFF) {
+		  timeout_flag = 1;
+	  }
+	}
+
+	uint8_t inline uart_get_timeout(void) {
+		return timeout_flag;
 	}
 #endif /* INTERRUPT_ENABLED */

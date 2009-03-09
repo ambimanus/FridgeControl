@@ -43,7 +43,7 @@ TARGET = main
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c uart.c fifo.c myavr.c rtc.c commands.c ds18s20.c basecontroller.c
+SRC = $(TARGET).c uart.c fifo.c myavr.c rtc.c commands.c ds18s20.c basecontroller.c random.c dsc.c
 
 
 # List Assembler source files here.

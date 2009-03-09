@@ -12,7 +12,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define DEBOUNCE	250L		// debounce clock (256Hz = 4msec)
+#define DEBOUNCE	250L		// debounce clock (256Hz ~ 4msec)
 
 void rtc_init(void);
 uint8_t rtc_hasChanged(void);

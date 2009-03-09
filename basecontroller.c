@@ -13,7 +13,7 @@ float tau_switch;
 float T_from;
 uint32_t starttime = 0L;
 uint16_t counter;
-uint8_t phase;
+uint8_t phase = PHASE_WARMING;
 
 float inline basecontroller_ac(void) {
 	return (T_MIN - T_MAX) / tau_cooling;
@@ -79,4 +79,8 @@ void basecontroller_poll(float T_current, uint32_t time) {
 			basecontroller_begin_warming(T_current, T_MAX);
 		}
 	}
+}
+
+uint8_t basecontroller_get_phase(void) {
+	return phase;
 }

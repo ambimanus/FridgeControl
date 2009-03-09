@@ -42,14 +42,15 @@
 #define RECALL_E2			0xB8
 #define READ_POWER_SUPPLY	0xB4
 
-uint8_t ds18s20_wReset(void);
-void ds18s20_wTxbit(uint8_t bit);
-uint8_t ds18s20_wRxbit(void);
-void ds18s20_wTxbyte(uint8_t data);
-uint8_t ds18s20_wRxbyte(void);
+//uint8_t ds18s20_wReset(void);
+//void ds18s20_wTxbit(uint8_t bit);
+//uint8_t ds18s20_wRxbit(void);
+//void ds18s20_wTxbyte(uint8_t data);
+//uint8_t ds18s20_wRxbyte(void);
 uint8_t ds18s20_reset(void);
-void ds18s20_readRom(void);
-uint8_t ds18s20_startMeasure(void);
-float ds18s20_readTemperature(void);
+void ds18s20_read_rom(void);
+uint8_t ds18s20_start_measure(void);
+float ds18s20_read_temperature(void);
+float ds18s20_get_temperature(void);
 
 #endif /* DS18B20_H_ */

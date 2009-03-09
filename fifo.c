@@ -12,9 +12,18 @@ uint8_t fifo_put (fifo_t *f, const uint8_t data)
 	return _inline_fifo_put (f, data);
 }
 
-uint8_t fifo_get_wait (fifo_t *f)
+uint8_t fifo_get_wait (fifo_t *f, int16_t timeout)
 {
-	while (!f->count);
+	uint32_t time = rtc_getTime();
+	while (!f->count) {
+		if (rtc_getTime() != time) {
+			time = rtc_getTime();
+			timeout--;
+			if (timeout <= 0) {
+				return 0xFF;
+			}
+		}
+	}
 
 	return _inline_fifo_get (f);
 }

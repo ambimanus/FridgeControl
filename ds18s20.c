@@ -7,6 +7,8 @@
 
 #include "ds18s20.h"
 
+float current_temperature = T_MIN;
+
 uint8_t ds18s20_wReset(void) {
 
 	/* For timings see an162.pdf */
@@ -119,7 +121,7 @@ uint8_t ds18s20_reset(void) {
 	return ret;
 }
 
-void ds18s20_readRom(void) {
+void ds18s20_read_rom(void) {
 	if (ds18s20_wReset() == 0) {
 		if (DEBUG) uart_puts_P(PSTR(" Reading ROM Code\n\r"));
 		ds18s20_wTxbyte(READ_ROM);
@@ -134,7 +136,7 @@ void ds18s20_readRom(void) {
 	}
 }
 
-uint8_t ds18s20_startMeasure(void) {
+uint8_t ds18s20_start_measure(void) {
 	// reset
 	if (ds18s20_wReset() == 0) {
 		// skip rom
@@ -148,11 +150,10 @@ uint8_t ds18s20_startMeasure(void) {
 	return 1;
 }
 
-float ds18s20_readTemperature(void) {
+float ds18s20_read_temperature(void) {
 	char get[9];
 	char temp_lsb, temp_msb;
 	int k;
-	float temp = 0.0f;
 	// reset
 	if (ds18s20_wReset() == 0) {
 		// skip rom
@@ -199,15 +200,19 @@ float ds18s20_readTemperature(void) {
 			temp_lsb = ((-1) * temp_lsb);
 		}
 		// calculate 0.1°C precision
-		temp = (float) temp_lsb - 0.25f + ((float) (get[7] - get[6])
-				/ (float) get[7]);
+		current_temperature = (float) temp_lsb - 0.25f + ((float) (get[7]
+				- get[6]) / (float) get[7]);
 		// print data
 		if (DEBUG) {
 			uart_puts_P(PSTR("   => Temperature: "));
 			char buf_s[32];
-			sprintf(buf_s, "%0#.1f °C\n\r", (double) temp);
+			sprintf(buf_s, "%0#.1f °C\n\r", (double) current_temperature);
 			uart_puts(buf_s);
 		}
 	}
-	return temp;
+	return current_temperature;
+}
+
+float ds18s20_get_temperature() {
+	return current_temperature;
 }

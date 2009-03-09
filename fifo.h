@@ -1,6 +1,7 @@
 #ifndef _FIFO_H_
 #define _FIFO_H_
 
+#include "main.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -14,7 +15,7 @@ typedef struct {
 
 extern void fifo_init (fifo_t*, uint8_t* buf, const uint8_t size);
 extern uint8_t fifo_put (fifo_t*, const uint8_t data);
-extern uint8_t fifo_get_wait (fifo_t*);
+extern uint8_t fifo_get_wait (fifo_t*, int16_t timeout);
 extern int fifo_get_nowait (fifo_t*);
 
 static inline uint8_t

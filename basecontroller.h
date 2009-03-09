@@ -21,9 +21,10 @@
 //float basecontroller_aw(void);
 //float basecontroller_tau_reqc(float T_from, float T_dest);
 //float basecontroller_tau_reqw(float T_from, float T_dest);
-//void basecontroller_begin_warming(float T_current, float T_dest);
-//void basecontroller_begin_cooling(float T_current, float T_dest);
+void basecontroller_begin_warming(float T_current, float T_dest);
+void basecontroller_begin_cooling(float T_current, float T_dest);
 void basecontroller_init(float T_current, uint32_t time);
 void basecontroller_poll(float T_current, uint32_t time);
+uint8_t basecontroller_get_phase(void);
 
 #endif /* BASECONTROLLER_H_ */

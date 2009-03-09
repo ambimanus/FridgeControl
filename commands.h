@@ -10,8 +10,10 @@
 
 #include "main.h"
 
-#define COMMAND_PHASE_COOLING	"phase(cooling);"
-#define COMMAND_PHASE_WARMING	"phase(warming);"
+#define COMMAND_HELP		"help"
+#define COMMAND_TIME		"time"
+#define COMMAND_COOLING		"cooling"
+#define COMMAND_WARMING		"warming"
 
 void command_eval(const char *command);
 
