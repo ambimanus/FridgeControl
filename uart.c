@@ -152,6 +152,7 @@
 			uart_putc (*s);
 		}
 		while (*s++);
+		_delay_ms(10);
 	}
 
 	// Einen 0-terminierten String senden, der im Flash steht.
@@ -165,6 +166,7 @@
 				break;
 			uart_putc (c);
 		}
+		_delay_ms(10);
 	}
 
 	// Einen '\n' terminierten String empfangen
