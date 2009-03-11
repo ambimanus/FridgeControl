@@ -19,7 +19,7 @@ uint16_t random_get_seed() {
 }
 
 uint32_t random_get_random(uint32_t low, uint32_t high) {
-	uint32_t rnd = rand();
+	uint32_t rnd = random();
 	uint32_t delay = ((int32_t) ((uint16_t) rnd) * (int32_t) high)
 			/ (uint16_t) RANDOM_MAX;
 	char buf_s[32];
