@@ -18,13 +18,14 @@ uint16_t random_get_seed() {
 	return seed;
 }
 
-uint32_t random_get_random(uint32_t low, uint32_t high) {
-	uint32_t rnd = random();
-	uint32_t delay = ((int32_t) ((uint16_t) rnd) * (int32_t) high)
-			/ (uint16_t) RANDOM_MAX;
-	char buf_s[32];
-	sprintf(buf_s, "%lu\t=>\t%lu\n\r", rnd, delay);
-	uart_puts(buf_s);
+uint32_t random_get_random(int32_t low, int32_t high) {
+	uint32_t rnd = random() / (RANDOM_MAX / (high - low) + 1);
+	rnd += low;
+	return rnd;
+}
 
-	return delay;
+float random_get_randomf(float low, float high) {
+	float rnd = ((float) random() / ((float) RANDOM_MAX + 1) * (high - low));
+	rnd += low;
+	return rnd;
 }

@@ -11,6 +11,7 @@
 //#define F_CPU	16000000UL
 #define F_CPU	16000348UL	// deviation calculated by rtc
 #define CR		"\n\r"
+#define INFO
 
 #include "myavr.h"
 #include "random.h"

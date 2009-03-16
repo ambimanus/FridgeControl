@@ -24,6 +24,9 @@ int main(void) {
 	/****************************
 	 * Init						*
 	 ****************************/
+	// Init ds18s20
+	ds18s20_init();
+	//DDRA |= 0x00;	//00000000 -> alle Analogports als Eingänge
 	// Init LEDs
 	led_init();
 	// Init speaker
@@ -38,31 +41,20 @@ int main(void) {
 	srand(seed);
 	srandom(seed);
 
-	char buf_s[32];
-	sprintf(buf_s, "  SEED=%u\n\r", seed);
-	uart_puts(buf_s);
-
-	int i = 0;
-	for (i = 0; i < 20; i++) {
-		random_get_random(0, 600);
-		_delay_ms(100);
-	}
-
 	/****************************
 	 * Startup					*
 	****************************/
 	// Welcome message
-	uart_puts_P(PSTR("\n\r **** FridgeControl ****\n\r"));
-	uart_puts_P(PSTR("\n\r Starting fridge control unit..."));
+	uart_puts_P(PSTR(" Starting fridge control unit..."));
 	// Perform first measurement
 	ds18s20_start_measure();
 	_delay_ms(2000);
 	temperature = ds18s20_read_temperature();
 	// Start fridge control unit
 	basecontroller_init(temperature, rtc_getTime());
-	uart_puts_P(PSTR("   => ready.\n\r"));
-	// Print help message
-	command_eval(COMMAND_HELP);
+	uart_puts_P(PSTR("   => ready."));
+	uart_puts_P(PSTR(CR));
+	command_eval(COMMAND_HELLO);
 
 	/****************************
 	 * Main loop				*
@@ -75,14 +67,18 @@ int main(void) {
 			// read current temperature
 			temperature = ds18s20_read_temperature();
 			// start next measure
-//			uint8_t ret = ds18s20_start_measure();
-//			if (ret) {
-//				command_eval(COMMAND_TIME);
-//				uart_puts_P(PSTR("    No response from sensor.\n\r\n\r"));
-//			} else {
-//				// poll fridge controller
-//				basecontroller_poll(temperature, rtc_getTime());
-//			}
+			uint8_t ret = ds18s20_start_measure();
+			if (ret) {
+				command_eval(COMMAND_TIME);
+				uart_puts_P(PSTR("    No response from sensor."));
+				uart_puts_P(PSTR(CR));
+				uart_puts_P(PSTR(CR));
+			} else {
+				// poll fridge controller
+				basecontroller_poll(temperature, rtc_getTime());
+				// poll dsc
+				dsc_poll(temperature, rtc_getTime());
+			}
 		}
 		// Check for received character
 		rx = uart_getc_nowait();
@@ -94,7 +90,9 @@ int main(void) {
 			uart_gets(line, rx, sizeof(line), USART_TIMEOUT);
 			// Check timeout
 			if (uart_get_timeout()) {
-				uart_puts_P(PSTR("   => Input timeout! Try again.\n\r\n\r"));
+				uart_puts_P(PSTR("   => Input timeout! Try again."));
+				uart_puts_P(PSTR(CR));
+				uart_puts_P(PSTR(CR));
 			} else {
 				// Evaluate received line
 				command_eval(line);

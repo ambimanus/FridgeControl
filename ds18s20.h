@@ -7,11 +7,11 @@
 
 #include "main.h"
 
-#ifndef DS18B20_H_
-#define DS18B20_H_
+#ifndef DS18S20_H_
+#define DS18S20_H_
 
 // debug flag
-#define DEBUG	1
+#define DS18S20_DEBUG	0
 
 // set pin mask
 #define wmask	(0x00)
@@ -20,7 +20,9 @@
 // set 1-wire pin for input (bus released & pull-up on)
 //#define wIn	(DDRA &= ~(1<<wmask)); (PORTA |= (1<<wmask))
 // set 1-wire pin for input (bus released & pull-up off)
-#define wIn		(DDRA &= ~(1<<wmask)); (PORTA &= ~(1<<wmask))
+//#define wIn		(DDRA &= ~(1<<wmask)); (PORTA &= ~(1<<wmask))
+// set 1-wire pin for input (bus released)
+#define wIn		(DDRA &= ~(1<<wmask))
 // set 1-wire bus high
 #define wH		(PORTA |= (1<<wmask))
 // set 1-wire bus low
@@ -47,10 +49,11 @@
 //uint8_t ds18s20_wRxbit(void);
 //void ds18s20_wTxbyte(uint8_t data);
 //uint8_t ds18s20_wRxbyte(void);
+void ds18s20_init(void);
 uint8_t ds18s20_reset(void);
 void ds18s20_read_rom(void);
 uint8_t ds18s20_start_measure(void);
 float ds18s20_read_temperature(void);
 float ds18s20_get_temperature(void);
 
-#endif /* DS18B20_H_ */
+#endif /* DS18S20_H_ */

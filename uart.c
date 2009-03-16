@@ -124,8 +124,7 @@
 	 * Ein-/Ausgabe
 	 *************************/
 
-	int uart_putc (const uint8_t c)
-	{
+	int uart_putc (const uint8_t c) {
 		int ret = fifo_put (&outfifo, c);
 
 		UCSRB |= (1 << UDRIE);
@@ -133,20 +132,17 @@
 		return ret;
 	}
 
-	int uart_getc_nowait ()
-	{
+	int uart_getc_nowait () {
 		return fifo_get_nowait (&infifo);
 	}
 
-	uint8_t uart_getc_wait (int16_t timeout)
-	{
+	uint8_t uart_getc_wait (int16_t timeout) {
 		timeout_flag = 0;
 		return fifo_get_wait (&infifo, timeout);
 	}
 
 	// Einen 0-terminierten String übertragen.
-	void uart_puts (const char *s)
-	{
+	void uart_puts (const char *s) {
 		do
 		{
 			uart_putc (*s);
@@ -156,8 +152,7 @@
 	}
 
 	// Einen 0-terminierten String senden, der im Flash steht.
-	void uart_puts_P (PGM_P s)
-	{
+	void uart_puts_P (PGM_P s) {
 		while (1)
 		{
 			unsigned char c = pgm_read_byte (s);
@@ -170,32 +165,30 @@
 	}
 
 	// Einen '\n' terminierten String empfangen
-	void uart_gets( char* Buffer, char firstChar, uint8_t MaxLen, int16_t timeout )
-	{
-	  uint8_t NextChar;
-	  uint8_t StringLen = 0;
+	void uart_gets(char* Buffer, char firstChar, uint8_t MaxLen, int16_t timeout) {
+		uint8_t NextChar;
+		uint8_t StringLen = 0;
 
-	  NextChar = firstChar;			  // Nehme übergebenes als erstes Zeichen
-	  //NextChar = uart_getc_wait();  // Warte auf und empfange das nächste Zeichen
-
-									  // Sammle solange Zeichen, bis:
-									  // * entweder das String Ende Zeichen kam
-									  // * oder das aufnehmende Array voll ist
-	  while (NextChar != '\n' && NextChar != '\r' && NextChar != 0xFF
-			&& StringLen < MaxLen - 1) {
-		*Buffer++ = NextChar;
-		StringLen++;
-		NextChar = uart_getc_wait(timeout);
-	  }
-
-									  // Noch ein '\0' anhängen um einen Standard
-									  // C-String daraus zu machen
-	  *Buffer = '\0';
-
-	  // Check timeout
-	  if (NextChar == 0xFF) {
-		  timeout_flag = 1;
-	  }
+		if (firstChar != '\0') {
+			// Take given char as starting character
+			NextChar = firstChar;
+		} else {
+			// Await and get next char
+			NextChar = uart_getc_wait(timeout);
+		}
+		// Collect chars until line break or array full
+		while (NextChar != '\n' && NextChar != '\r' && NextChar != 0xFF
+				&& StringLen < MaxLen - 1) {
+			*Buffer++ = NextChar;
+			StringLen++;
+			NextChar = uart_getc_wait(timeout);
+		}
+		// Add '\0' to finish string
+		*Buffer = '\0';
+		// Check timeout
+		if (NextChar == 0xFF) {
+			timeout_flag = 1;
+		}
 	}
 
 	uint8_t inline uart_get_timeout(void) {

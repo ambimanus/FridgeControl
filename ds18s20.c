@@ -9,6 +9,12 @@
 
 float current_temperature = T_MIN;
 
+void ds18s20_init() {
+	DDRA &= 0x00;	// Set all port pins as input,
+	PORTA |= 0xff;	// activate internal pullups to avoid floating input pins,
+	wL;				// but not for the data line, have external pullup of 4.7k required for DS1820.
+}
+
 uint8_t ds18s20_wReset(void) {
 
 	/* For timings see an162.pdf */
@@ -16,13 +22,13 @@ uint8_t ds18s20_wReset(void) {
 	// Return var
 	uint8_t present;
 
-	/*
+
 	// Init condition:
-	//wOut;
-	//wH;
-	wIn;
-	_delay_ms(1);
-	*/
+//	wOut;
+//	wH;
+//	wIn;
+//	_delay_ms(1);
+
 
 	// Pull line low for 480us (reset pulse)
 	wOut;
@@ -105,10 +111,10 @@ uint8_t ds18s20_wRxbyte(void) {
 	return data;
 }
 
-uint8_t ds18s20_reset(void) {
-	if(DEBUG) uart_puts_P(PSTR(" Sensor reset: "));
+uint8_t ds18s20_reset() {
+	if(DS18S20_DEBUG) uart_puts_P(PSTR(" Sensor reset: "));
 	uint8_t ret = ds18s20_wReset();
-	if(DEBUG) {
+	if(DS18S20_DEBUG) {
 		char buf_s[32];
 		sprintf(buf_s, "%d\n\r", ret);
 		uart_puts(buf_s);
@@ -121,9 +127,9 @@ uint8_t ds18s20_reset(void) {
 	return ret;
 }
 
-void ds18s20_read_rom(void) {
+void ds18s20_read_rom() {
 	if (ds18s20_wReset() == 0) {
-		if (DEBUG) uart_puts_P(PSTR(" Reading ROM Code\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Reading ROM Code\n\r"));
 		ds18s20_wTxbyte(READ_ROM);
 		char rom[8];
 		for (int i = 0; i < 8; i++) {
@@ -132,43 +138,43 @@ void ds18s20_read_rom(void) {
 		char buf_s[32];
 		sprintf(buf_s, "   => %02X %02X %02X %02X %02X %02X %02X %02X\n\r", rom[7],
 				rom[6], rom[5], rom[4], rom[3], rom[2], rom[1], rom[0]);
-		if (DEBUG) uart_puts(buf_s);
+		if (DS18S20_DEBUG) uart_puts(buf_s);
 	}
 }
 
-uint8_t ds18s20_start_measure(void) {
+uint8_t ds18s20_start_measure() {
 	// reset
 	if (ds18s20_wReset() == 0) {
 		// skip rom
-		if (DEBUG) uart_puts_P(PSTR(" Skipping ROM\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Skipping ROM\n\r"));
 		ds18s20_wTxbyte(SKIP_ROM);
 		// start measurement
-		if (DEBUG) uart_puts_P(PSTR(" Starting measurement\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Starting measurement\n\r"));
 		ds18s20_wTxbyte(CONVERT_T);
 		return 0;
 	}
 	return 1;
 }
 
-float ds18s20_read_temperature(void) {
+float ds18s20_read_temperature() {
 	char get[9];
 	char temp_lsb, temp_msb;
 	int k;
 	// reset
 	if (ds18s20_wReset() == 0) {
 		// skip rom
-		if (DEBUG) uart_puts_P(PSTR(" Skipping ROM\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Skipping ROM\n\r"));
 		ds18s20_wTxbyte(SKIP_ROM);
 		// init read scratchpad
-		if (DEBUG) uart_puts_P(PSTR(" Init scratchpad reading\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Init scratchpad reading\n\r"));
 		ds18s20_wTxbyte(READ_SCRATCHPAD);
 		// read scratchpad
-		if (DEBUG) uart_puts_P(PSTR(" Reading scratchpad\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Reading scratchpad\n\r"));
 		for (k = 0; k < 9; k++) {
 			get[k] = ds18s20_wRxbyte();
 		}
 		// print data
-		if (DEBUG) {
+		if (DS18S20_DEBUG) {
 			char buf_s[32];
 			sprintf(buf_s,
 					"   => %02X %02X %02X %02X %02X %02X %02X %02X %02X\n\r",
@@ -176,7 +182,7 @@ float ds18s20_read_temperature(void) {
 					get[1], get[0]);
 			uart_puts(buf_s);
 		}
-		if (DEBUG) uart_puts_P(PSTR(" Interpreting scratchpad\n\r"));
+		if (DS18S20_DEBUG) uart_puts_P(PSTR(" Interpreting scratchpad\n\r"));
 		// MS Byte: Sign byte + lsbit
 		temp_msb = get[1];
 		// LS Byte: Temp data plus lsb
@@ -203,7 +209,7 @@ float ds18s20_read_temperature(void) {
 		current_temperature = (float) temp_lsb - 0.25f + ((float) (get[7]
 				- get[6]) / (float) get[7]);
 		// print data
-		if (DEBUG) {
+		if (DS18S20_DEBUG) {
 			uart_puts_P(PSTR("   => Temperature: "));
 			char buf_s[32];
 			sprintf(buf_s, "%0#.1f °C\n\r", (double) current_temperature);

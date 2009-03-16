@@ -10,6 +10,14 @@
 
 #include "main.h"
 
-void dsc_load(uint16_t spread);
+typedef enum {
+	DSC_IDLE,
+	DSC_WAIT_RANDOM,
+	DSC_WAIT_RESTORE
+} dsc_states;
+
+void dsc_start(uint8_t doUnload, uint16_t spread);
+void dsc_poll(float T_current, uint32_t time);
+dsc_states dsc_get_state(void);
 
 #endif /* DSC_H_ */

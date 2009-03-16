@@ -18,10 +18,13 @@ void port_d_setpin(const uint8_t pin, const uint8_t high);
 #define RELAIS_DDR		DDRD
 #define RELAIS_PORT		PORTD
 #define RELAIS_PIN		4
+#define RELAIS_ON		1
+#define RELAIS_OFF		0
 
 void relais_init(void);
 void relais_test(void);
 void relais_set(uint8_t enable);
+uint8_t relais_get_state(void);
 
 /****************************
  * LEDs						*
@@ -81,5 +84,25 @@ Ais/B	466,16		932,33		1864,66
 H		493,88		987,77		1975,53
 */
 void speaker_tune(uint16_t bpm, uint16_t duration, char note, uint16_t octave);
+
+/*
+ * ==> Melody:
+ * 22 Indiana Jones v2
+ * const char* song_str_107 = "4e1 16f1 8g1 2c2 4d1 16e1 1f1 4g1 16a1 8b1
+ * 2f2 4a1 16b1 4c2 4d2 4e2 4e1 16f1 8g1 1c2 4d2 16e2 2f2 4g1 16g1 4e2 4d2
+ * 16g1 4e2 4d2 16g1 4f2 4e2 16d2 2c2";
+ * const unsigned char song_bpm_107 = 125;
+ */
+void speaker_tune_indy(void);
+
+/*
+ * 21 Imperial
+ * const char* song_str_105 = "4a1 4a1 4a1 4f1 16c2 4a1 4f1 16c2 2a1 4e2
+ * 4e2 4e2 4f2 16c2 4#g1 4f1 16c2 2a1 4a2 4a1 16a1 4a2 4#g2 16g2 16#f2
+ * 16f2 4#f2 8#a1 4#d2 4d2 16#c2 16c2 16b1 4c2 8f1 4#g1 4f1 16#g1 4c2 4a1
+ * 16c2 2e2 4a2 4a1 16a1 4a2 4#g2 16g2 16#f2 16f2";
+ * const unsigned char song_bpm_105 = 112
+*/
+void speaker_tune_imperial(void);
 
 #endif /* MYAVR_H_ */
