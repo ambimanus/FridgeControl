@@ -12,6 +12,8 @@
 
 #define T_MIN				6.5f	// degrees celsius
 #define T_MAX				8.0f	// degrees celsius
+//#define T_MIN				16.5f	// degrees celsius
+//#define T_MAX				28.0f	// degrees celsius
 #define TAU_COOLING_INIT	5400.0f	// seconds
 #define TAU_WARMING_INIT	9000.0f	// seconds
 

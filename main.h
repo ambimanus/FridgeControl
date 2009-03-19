@@ -8,9 +8,10 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-//#define F_CPU	16000000UL
-#define F_CPU	16000348UL	// deviation calculated by rtc
-#define CR		"\n\r"
+//#define F_CPU				16000000UL
+#define F_CPU				16000348UL	// deviation calculated by rtc
+#define REPORT_INTERVAL		60			// report temperature every x seconds
+#define CR					"\n\r"
 #define INFO
 
 #include "myavr.h"

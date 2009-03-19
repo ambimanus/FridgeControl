@@ -66,7 +66,7 @@ void led_set(uint8_t led, uint8_t enable) {
 
 void speaker_init() {
 	// Set speaker pin as output
-	SPEAKER_DDR |= SPEAKER_PIN;
+	SPEAKER_DDR |= (1 << SPEAKER_PIN);
 	// Set pin low
 	SPEAKER_PORT &= ~(1 << SPEAKER_PIN);
 }
@@ -76,7 +76,7 @@ void speaker_sound(uint16_t f, uint16_t dur) {
 	// holdtime in us
 	uint32_t holdtime;
 	cycles = ((uint32_t) f * (uint32_t) dur) / 1000UL;
-	holdtime = 1000000UL / (2UL * (uint32_t) f);
+	holdtime = 16000348UL / (2UL * (uint32_t) f);
 
 	for (uint32_t i = 0; i < cycles; i++) {
 		SPEAKER_PORT |= (1 << SPEAKER_PIN);

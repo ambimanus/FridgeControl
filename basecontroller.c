@@ -41,7 +41,9 @@ float inline basecontroller_tau_reqw(float T_from, float T_dest) {
 
 void basecontroller_begin_warming(float T_current, float T_dest) {
 	// Update tau_cooling
-	tau_cooling = (T_MAX- T_MIN) * counter / (T_from - T_current);
+	if (T_from != T_current) {
+		tau_cooling = (T_MAX- T_MIN) * counter / (T_from - T_current);
+	}
 	// Switch phase
 	relais_set(0);
 	T_from = T_current;
@@ -71,7 +73,9 @@ void basecontroller_begin_warming(float T_current, float T_dest) {
 
 void basecontroller_begin_cooling(float T_current, float T_dest) {
 	// Update tau_warming
-	tau_warming = (T_MAX- T_MIN) * counter / (T_current - T_from);
+	if (T_from != T_current) {
+		tau_warming = (T_MAX- T_MIN) * counter / (T_current - T_from);
+	}
 	// Switch phase
 	relais_set(1);
 	T_from = T_current;
@@ -116,14 +120,14 @@ void basecontroller_poll(float T_current, uint32_t time) {
 	counter = time - starttime;
 	switch (basecontroller_state) {
 	case BASE_COOLING: {
-		if (counter >= tau_switch || T_current >= T_MAX) {
-			basecontroller_begin_cooling(T_current, T_MIN);
+		if (counter >= tau_switch || T_current <= T_MIN) {
+			basecontroller_begin_warming(T_current, T_MAX);
 		}
 		break;
 	}
 	case BASE_WARMING: {
-		if (counter >= tau_switch || T_current <= T_MIN) {
-			basecontroller_begin_warming(T_current, T_MAX);
+		if (counter >= tau_switch || T_current >= T_MAX) {
+			basecontroller_begin_cooling(T_current, T_MIN);
 		}
 		break;
 	}

@@ -20,13 +20,14 @@ int main(void) {
 	char line[64];
 	// Current temperature
 	float temperature;
+	// temperature report counter
+	uint8_t reportcounter = -1;
 
 	/****************************
 	 * Init						*
 	 ****************************/
 	// Init ds18s20
 	ds18s20_init();
-	//DDRA |= 0x00;	//00000000 -> alle Analogports als Eingänge
 	// Init LEDs
 	led_init();
 	// Init speaker
@@ -60,10 +61,14 @@ int main(void) {
 	 * Main loop				*
 	 ****************************/
 	while (1) {
+		// Disable led 0
+		led_set(0, 0);
 		// Check time
 		if (rtc_hasChanged()) {
 			// One second elapsed, clear flag
 			rtc_clearFlag();
+			// Flash led 0
+			led_set(0, 1);
 			// read current temperature
 			temperature = ds18s20_read_temperature();
 			// start next measure
@@ -78,6 +83,18 @@ int main(void) {
 				basecontroller_poll(temperature, rtc_getTime());
 				// poll dsc
 				dsc_poll(temperature, rtc_getTime());
+			}
+			// Increase report counter
+			reportcounter++;
+			// Report temperature every x seconds
+			if (reportcounter == REPORT_INTERVAL) {
+				reportcounter = 0;
+				char buf_s[32];
+				sprintf(buf_s, "#\t%lu", rtc_getTime());
+				uart_puts(buf_s);
+				uart_puts_P(PSTR("\t"));
+				sprintf(buf_s, "%0#.1f\n\r", (double) ds18s20_get_temperature());
+				uart_puts(buf_s);
 			}
 		}
 		// Check for received character
