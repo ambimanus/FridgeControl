@@ -10,7 +10,6 @@
 dsc_states dsc_state = DSC_IDLE;
 uint8_t flag_unload = 0;
 uint32_t delay = 0UL;
-float T_dest;
 
 void dsc_start(uint8_t doUnload, uint16_t spread) {
 	flag_unload = doUnload;
@@ -52,9 +51,11 @@ void dsc_poll(float T_current, uint32_t time) {
 			delay--;
 		} else {
 			if (flag_unload) {
-				basecontroller_begin_warming(T_current, T_MAX);
+				basecontroller_begin_warming(T_current,
+						basecontroller_get_t_max(), time);
 			} else {
-				basecontroller_begin_cooling(T_current, T_MIN);
+				basecontroller_begin_cooling(T_current,
+						basecontroller_get_t_min(), time);
 			}
 			dsc_state = DSC_WAIT_RESTORE;
 			delay = basecontroller_get_tau_cooling()
@@ -76,11 +77,21 @@ void dsc_poll(float T_current, uint32_t time) {
 		if (delay > 0) {
 			delay--;
 		} else {
-			T_dest = random_get_randomf(T_MIN, T_MAX);
-			if (T_dest <= T_current) {
-				basecontroller_begin_warming(T_current, T_dest);
+			// a) Randomization
+//			float T_dest = random_get_randomf(basecontroller_get_t_min(),
+//					basecontroller_get_t_max());
+//			if (T_dest <= T_current) {
+//				basecontroller_begin_warming(T_current, T_dest, time);
+//			} else {
+//				basecontroller_begin_cooling(T_current, T_dest, time);
+//			}
+			// or b) State switching
+			if (basecontroller_get_state() == BASE_COOLING) {
+				basecontroller_begin_warming(T_current,
+						basecontroller_get_t_max(), time);
 			} else {
-				basecontroller_begin_cooling(T_current, T_dest);
+				basecontroller_begin_cooling(T_current,
+						basecontroller_get_t_min(), time);
 			}
 			dsc_state = DSC_IDLE;
 			delay = 0;

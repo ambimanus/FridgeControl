@@ -26,8 +26,13 @@ int main(void) {
 	/****************************
 	 * Init						*
 	 ****************************/
-	// Init ds18s20
-	ds18s20_init();
+	if (SIMULATE) {
+		// Init simulator
+		simulator_init();
+	} else {
+		// Init ds18s20
+		ds18s20_init();
+	}
 	// Init LEDs
 	led_init();
 	// Init speaker
@@ -47,12 +52,19 @@ int main(void) {
 	****************************/
 	// Welcome message
 	uart_puts_P(PSTR(" Starting fridge control unit..."));
-	// Perform first measurement
-	ds18s20_start_measure();
-	_delay_ms(2000);
-	temperature = ds18s20_read_temperature();
-	// Start fridge control unit
-	basecontroller_init(temperature, rtc_getTime());
+	if (SIMULATE == 1) {
+		uart_puts_P(PSTR(" (simulation mode)"));
+		// Start fridge control unit
+		basecontroller_init(T_MIN_INIT, rtc_getTime());
+		temperature = simulator_get_temperature();
+	} else {
+		// Perform first measurement
+		ds18s20_start_measure();
+		_delay_ms(2000);
+		temperature = ds18s20_read_temperature();
+		// Start fridge control unit
+		basecontroller_init(temperature, rtc_getTime());
+	}
 	uart_puts_P(PSTR("   => ready."));
 	uart_puts_P(PSTR(CR));
 	command_eval(COMMAND_HELLO);
@@ -70,19 +82,10 @@ int main(void) {
 			// Flash led 0
 			led_set(0, 1);
 			// read current temperature
-			temperature = ds18s20_read_temperature();
-			// start next measure
-			uint8_t ret = ds18s20_start_measure();
-			if (ret) {
-				command_eval(COMMAND_TIME);
-				uart_puts_P(PSTR("    No response from sensor."));
-				uart_puts_P(PSTR(CR));
-				uart_puts_P(PSTR(CR));
+			if (SIMULATE == 1) {
+				temperature = simulator_get_temperature();
 			} else {
-				// poll fridge controller
-				basecontroller_poll(temperature, rtc_getTime());
-				// poll dsc
-				dsc_poll(temperature, rtc_getTime());
+				temperature = ds18s20_read_temperature();
 			}
 			// Increase report counter
 			reportcounter++;
@@ -93,8 +96,26 @@ int main(void) {
 				sprintf(buf_s, "#\t%lu", rtc_getTime());
 				uart_puts(buf_s);
 				uart_puts_P(PSTR("\t"));
-				sprintf(buf_s, "%0#.1f\n\r", (double) ds18s20_get_temperature());
+				sprintf(buf_s, "%0#.1f\n\r", (double) temperature);
 				uart_puts(buf_s);
+			}
+			uint8_t ret;
+			if (SIMULATE == 1) {
+				ret = 0;
+			} else {
+				// start next measure
+				ret = ds18s20_start_measure();
+			}
+			if (ret) {
+				command_eval(COMMAND_TIME);
+				uart_puts_P(PSTR("    No response from sensor."));
+				uart_puts_P(PSTR(CR));
+				uart_puts_P(PSTR(CR));
+			} else {
+				// poll fridge controller
+				basecontroller_poll(temperature, rtc_getTime());
+				// poll dsc
+				dsc_poll(temperature, rtc_getTime());
 			}
 		}
 		// Check for received character

@@ -19,6 +19,8 @@
 #define COMMAND_IMPERIAL	"imperial"
 #define COMMAND_COOLING		"cooling"
 #define COMMAND_WARMING		"warming"
+#define COMMAND_SET_T_MIN	"set t_min"
+#define COMMAND_SET_T_MAX	"set t_max"
 #define COMMAND_DSC			"dsc"
 #define COMMAND_TLR			"tlr"
 

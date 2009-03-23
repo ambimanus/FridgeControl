@@ -7,7 +7,7 @@
 
 #include "ds18s20.h"
 
-float current_temperature = T_MIN;
+float current_temperature;
 
 void ds18s20_init() {
 	DDRA &= 0x00;	// Set all port pins as input,
