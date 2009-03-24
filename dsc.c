@@ -15,6 +15,9 @@ void dsc_start(uint8_t doUnload, uint16_t spread) {
 	flag_unload = doUnload;
 	if ((flag_unload == 0 && basecontroller_get_state() == BASE_WARMING)
 			|| (flag_unload != 0 && basecontroller_get_state() == BASE_COOLING)) {
+		// Enable led 3
+		led_set(3, 1);
+		// Start DSC
 		dsc_state = DSC_WAIT_RANDOM;
 		delay = random_get_random(0UL, spread);
 #ifdef INFO
@@ -95,6 +98,8 @@ void dsc_poll(float T_current, uint32_t time) {
 			}
 			dsc_state = DSC_IDLE;
 			delay = 0;
+			// Disable led 3
+			led_set(3, 0);
 #ifdef INFO
 			uart_puts_P(PSTR(CR));
 			uart_puts_P(PSTR("dsc:\t> state is now 'idle'."));

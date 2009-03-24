@@ -29,6 +29,7 @@
 			uart_putc(*s);
 			s++;
 		}
+		_delay_ms(10);
 	}
 
 	uint8_t uart_readc( void ) {
@@ -143,11 +144,11 @@
 
 	// Einen 0-terminierten String übertragen.
 	void uart_puts (const char *s) {
-		do
-		{
+
+		while (*s) {
 			uart_putc (*s);
+			s++;
 		}
-		while (*s++);
 		_delay_ms(10);
 	}
 

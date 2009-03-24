@@ -41,7 +41,20 @@ void command_eval(const char *command) {
 		uart_puts_P(PSTR("  > dsc\t\tDSC control signal."));
 //		uart_puts_P(PSTR(CR));
 //		uart_puts_P(PSTR("  > tlr\t\tTLR control signal."));
+		// TODO
 		uart_puts_P(PSTR(CR));
+		uart_puts_P(PSTR(CR));
+		uart_puts_P(PSTR(" => LEDs explanation:"));
+		uart_puts_P(PSTR(CR));
+		uart_puts_P(PSTR("  > LED 0\tClock, flashes each second."));
+		uart_puts_P(PSTR(CR));
+		uart_puts_P(PSTR("  > LED 1\tCommunication, flashes while receiving."));
+		uart_puts_P(PSTR(CR));
+		uart_puts_P(PSTR("  > LED 2\tFridge mode, flashes while cooling."));
+		uart_puts_P(PSTR(CR));
+		uart_puts_P(PSTR("  > LED 3\tDSC mode, flashes while active."));
+		uart_puts_P(PSTR(CR));
+		// TODO
 		uart_puts_P(PSTR(CR));
 	} else if (!strcmp_P(command, PSTR(COMMAND_STATUS))) {
 		char buf_s[32];
@@ -149,8 +162,9 @@ void command_eval(const char *command) {
 		uart_puts_P(PSTR(CR));
 		uart_puts_P(PSTR("  > T_MIN currently is "));
 		char buf_s[8];
-		sprintf(buf_s, "%0#.1f\n\r", (double) basecontroller_get_t_min());
+		sprintf(buf_s, "%0#.1f", (double) basecontroller_get_t_min());
 		uart_puts(buf_s);
+		uart_puts_P(PSTR(CR));
 		uart_puts_P(PSTR("  > Enter new T_MIN: "));
 		while (1) {
 			// Read line
@@ -187,8 +201,9 @@ void command_eval(const char *command) {
 		uart_puts_P(PSTR(CR));
 		uart_puts_P(PSTR("  > T_MAX currently is "));
 		char buf_s[8];
-		sprintf(buf_s, "%0#.1f\n\r", (double) basecontroller_get_t_max());
+		sprintf(buf_s, "%0#.1f", (double) basecontroller_get_t_max());
 		uart_puts(buf_s);
+		uart_puts_P(PSTR(CR));
 		uart_puts_P(PSTR("  > Enter new T_MAX: "));
 		while (1) {
 			// Read line

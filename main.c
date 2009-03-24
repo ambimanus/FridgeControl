@@ -96,8 +96,9 @@ int main(void) {
 				sprintf(buf_s, "#\t%lu", rtc_getTime());
 				uart_puts(buf_s);
 				uart_puts_P(PSTR("\t"));
-				sprintf(buf_s, "%0#.1f\n\r", (double) temperature);
+				sprintf(buf_s, "%0#.1f", (double) temperature);
 				uart_puts(buf_s);
+				uart_puts_P(PSTR(CR));
 			}
 			uint8_t ret;
 			if (SIMULATE == 1) {

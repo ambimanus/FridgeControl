@@ -40,10 +40,17 @@ void relais_test(void) {
 }
 
 void relais_set(uint8_t enable) {
-	if (enable)
+	if (enable) {
+		// Enable led 2
+		led_set(2, 1);
+		// Enable relais
 		RELAIS_PORT |= (1 << RELAIS_PIN);
-	else
+	} else {
+		// Disable led 2
+		led_set(2, 0);
+		// Disable relais
 		RELAIS_PORT &= ~(1 << RELAIS_PIN);
+	}
 }
 
 uint8_t inline relais_get_state(void) {
