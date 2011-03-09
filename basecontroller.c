@@ -60,7 +60,7 @@ uint16_t inline basecontroller_tau_reqw(float T_from, float T_dest) {
 
 void basecontroller_begin_warming(float T_current, float T_destination, uint32_t time) {
 	// Check reasonability of desired switch
-	if (T_destination - T_current < 0.25) {
+	if ((T_current < T_destination) && (T_destination - T_current < 0.25)) {
 		// We would switch again shortly after this switch, so ignore the command!
 #ifdef INFO
 		uart_puts_P(PSTR(CR));
@@ -109,7 +109,7 @@ void basecontroller_begin_warming(float T_current, float T_destination, uint32_t
 
 void basecontroller_begin_cooling(float T_current, float T_destination, uint32_t time) {
 	// Check reasonability of desired switch
-	if (T_current - T_destination < 0.25) {
+	if ((T_current > T_destination) && (T_current - T_destination < 0.25)) {
 		// We would switch again shortly after this switch, so ignore the command!
 #ifdef INFO
 		uart_puts_P(PSTR(CR));

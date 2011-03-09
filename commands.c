@@ -46,13 +46,13 @@ void command_eval(const char *command) {
 		uart_puts_P(PSTR(CR));
 		uart_puts_P(PSTR(" => LEDs explanation:"));
 		uart_puts_P(PSTR(CR));
-		uart_puts_P(PSTR("  > LED 0\tClock, flashes each second."));
+		uart_puts_P(PSTR("  > LED 0\tClock: flashes each second."));
 		uart_puts_P(PSTR(CR));
-		uart_puts_P(PSTR("  > LED 1\tCommunication, flashes while receiving."));
+		uart_puts_P(PSTR("  > LED 1\tCommunication: flashes while receiving."));
 		uart_puts_P(PSTR(CR));
-		uart_puts_P(PSTR("  > LED 2\tFridge mode, flashes while cooling."));
+		uart_puts_P(PSTR("  > LED 2\tFridge: flashes while cooling."));
 		uart_puts_P(PSTR(CR));
-		uart_puts_P(PSTR("  > LED 3\tDSC mode, flashes while active."));
+		uart_puts_P(PSTR("  > LED 3\tDSC: flashes while active."));
 		uart_puts_P(PSTR(CR));
 		// TODO
 		uart_puts_P(PSTR(CR));
@@ -181,7 +181,7 @@ void command_eval(const char *command) {
 			}
 			// Evaluate received line
 			float t_min = -200.0f;
-			t_min = scanf(buf_s);
+			t_min = atof(buf_s);
 			if (t_min == -200.0f) {
 				uart_puts_P(PSTR(CR));
 				uart_puts_P(PSTR(" => Parameter not recognized."));
@@ -220,7 +220,7 @@ void command_eval(const char *command) {
 			}
 			// Evaluate received line
 			float t_max = -200.0f;
-			t_max = scanf(buf_s);
+			t_max = atof(buf_s);
 			if (t_max == -200.0f) {
 				uart_puts_P(PSTR(CR));
 				uart_puts_P(PSTR(" => Parameter not recognized."));

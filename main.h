@@ -10,11 +10,14 @@
 
 //#define F_CPU				16000000UL
 #define F_CPU				16000348UL	// deviation calculated by rtc
-#define REPORT_INTERVAL		60			// report temperature every x seconds
-//#define REPORT_INTERVAL	1			// report temperature every x seconds
-#define CR					"\r"
 #define INFO
 #define SIMULATE			0
+#if SIMULATE
+#define REPORT_INTERVAL		1			// report temperature every x seconds
+#else
+#define REPORT_INTERVAL		60			// report temperature every x seconds
+#endif
+#define CR					"\r"
 #define ROUND_INT_8(d)		( (int8_t) ((d) + ((d) > 0 ? 0.5 : -0.5)) )
 #define ROUND_INT_16(d)		( (int16_t) ((d) + ((d) > 0 ? 0.5 : -0.5)) )
 #define ROUND_INT_32(d)		( (int32_t) ((d) + ((d) > 0 ? 0.5 : -0.5)) )

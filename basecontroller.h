@@ -10,12 +10,15 @@
 
 #include "main.h"
 
-#define T_MIN_INIT			6.5f	// degrees celsius
-#define T_MAX_INIT			8.0f	// degrees celsius
+#define T_MIN_INIT			7.2f	// degrees celsius
+#define T_MAX_INIT			8.9f	// degrees celsius
+#if SIMULATE
+#define TAU_COOLING_INIT	10.0f	// seconds
+#define TAU_WARMING_INIT	15.0f	// seconds
+#else
 #define TAU_COOLING_INIT	5400.0f	// seconds
 #define TAU_WARMING_INIT	9000.0f	// seconds
-//#define TAU_COOLING_INIT	10.0f	// seconds
-//#define TAU_WARMING_INIT	15.0f	// seconds
+#endif
 
 typedef enum {
 	BASE_COOLING,
