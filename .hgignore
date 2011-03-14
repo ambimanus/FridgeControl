@@ -11,3 +11,4 @@ syntax: glob
 *~
 .dep
 *.hex
+*.orig

@@ -170,6 +170,9 @@
         uint8_t NextChar;
         uint8_t StringLen = 0;
 
+        // Print command prompt
+        uart_puts_P(PSTR(PROMPT));
+
         if (firstChar != '\0') {
             // Take given char as starting character
             NextChar = firstChar;
@@ -182,6 +185,8 @@
                 && StringLen < MaxLen - 1) {
             *Buffer++ = NextChar;
             StringLen++;
+            uart_putc(NextChar);
+            // Read next char
             NextChar = uart_getc_wait(timeout);
         }
         // Add '\0' to finish string
