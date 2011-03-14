@@ -11,38 +11,38 @@
 #define DS18S20_H_
 
 // debug flag
-#define DS18S20_DEBUG	0
+#define DS18S20_DEBUG   0
 
 // set pin mask
-#define wmask	(0x00)
+#define wmask   (0x00)
 // set 1-wire pin for output
-#define wOut	(DDRA |= (1<<wmask))
+#define wOut    (DDRA |= (1<<wmask))
 // set 1-wire pin for input (bus released & pull-up on)
-//#define wIn	(DDRA &= ~(1<<wmask)); (PORTA |= (1<<wmask))
+//#define wIn   (DDRA &= ~(1<<wmask)); (PORTA |= (1<<wmask))
 // set 1-wire pin for input (bus released & pull-up off)
-//#define wIn		(DDRA &= ~(1<<wmask)); (PORTA &= ~(1<<wmask))
+//#define wIn       (DDRA &= ~(1<<wmask)); (PORTA &= ~(1<<wmask))
 // set 1-wire pin for input (bus released)
-#define wIn		(DDRA &= ~(1<<wmask))
+#define wIn     (DDRA &= ~(1<<wmask))
 // set 1-wire bus high
-#define wH		(PORTA |= (1<<wmask))
+#define wH      (PORTA |= (1<<wmask))
 // set 1-wire bus low
-#define wL		(PORTA &= ~(1<<wmask))
+#define wL      (PORTA &= ~(1<<wmask))
 // get 1-wire bus input (bus released)
-#define wR		(PINA & (1<<wmask))
+#define wR      (PINA & (1<<wmask))
 
 /* ROM COMMANDS */
-#define SEARCH_ROM			0xF0
-#define READ_ROM			0x33
-#define MATCH_ROM			0x55
-#define SKIP_ROM			0xCC
-#define ALARM_SEARCH		0xEC
+#define SEARCH_ROM          0xF0
+#define READ_ROM            0x33
+#define MATCH_ROM           0x55
+#define SKIP_ROM            0xCC
+#define ALARM_SEARCH        0xEC
 /* FUNCTION COMMANDS */
-#define CONVERT_T			0x44
-#define WRITE_SCRATCHPAD	0x4E
-#define READ_SCRATCHPAD		0xBE
-#define COPY_SCRATCHPAD		0x48
-#define RECALL_E2			0xB8
-#define READ_POWER_SUPPLY	0xB4
+#define CONVERT_T           0x44
+#define WRITE_SCRATCHPAD    0x4E
+#define READ_SCRATCHPAD     0xBE
+#define COPY_SCRATCHPAD     0x48
+#define RECALL_E2           0xB8
+#define READ_POWER_SUPPLY   0xB4
 
 //uint8_t ds18s20_wReset(void);
 //void ds18s20_wTxbit(uint8_t bit);

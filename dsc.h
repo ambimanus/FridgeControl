@@ -11,9 +11,9 @@
 #include "main.h"
 
 typedef enum {
-	DSC_IDLE,
-	DSC_WAIT_RANDOM,
-	DSC_WAIT_RESTORE
+    DSC_IDLE,
+    DSC_WAIT_RANDOM,
+    DSC_WAIT_RESTORE
 } dsc_states;
 
 void dsc_start(uint8_t doUnload, uint16_t spread);

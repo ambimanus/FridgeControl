@@ -13,25 +13,25 @@
 
 #include "main.h"
 
-#define MAX_EVENTS		10
+#define MAX_EVENTS      10
 
 typedef enum {
-	EV_DSC_LOAD,
-	EV_DSC_UNLOAD,
-	EV_TLR
+    EV_DSC_LOAD,
+    EV_DSC_UNLOAD,
+    EV_TLR
 } event_type;
 
 typedef struct {
-	// id
-	uint32_t id;
-	// creation timestamp
-	uint32_t creation;
-	// activation timestamp
-	uint32_t activation;
-	// event type
-	event_type type;
-	// parameters
-	float *parameters[];
+    // id
+    uint32_t id;
+    // creation timestamp
+    uint32_t creation;
+    // activation timestamp
+    uint32_t activation;
+    // event type
+    event_type type;
+    // parameters
+    float *parameters[];
 } event;
 
 uint8_t events_is_event_pending(void);
