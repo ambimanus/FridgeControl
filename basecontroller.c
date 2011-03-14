@@ -58,9 +58,10 @@ uint16_t inline basecontroller_tau_reqw(float T_from, float T_dest) {
     return ROUND_UINT_16((T_dest - T_from) / basecontroller_aw());
 }
 
-void basecontroller_begin_warming(float T_current, float T_destination, uint32_t time) {
+void basecontroller_begin_warming() {
+    float T_current = ds18s20_get_temperature();
     // Check reasonability of desired switch
-    if ((T_current < T_destination) && (T_destination - T_current < 0.25)) {
+    if ((T_current < T_MAX) && (T_MAX - T_current < 0.25)) {
         // We would switch again shortly after this switch, so ignore the command!
 #ifdef INFO
         uart_puts_P(PSTR(CR));
@@ -77,9 +78,9 @@ void basecontroller_begin_warming(float T_current, float T_destination, uint32_t
     // Switch phase
     relais_set(0);
     T_from = T_current;
-    T_dest = T_destination;
+    T_dest = T_MAX;
     counter = 0;
-    starttime = time;
+    starttime = rtc_getTime();
     basecontroller_state = BASE_WARMING;
     // Predict next phase switch
     tau_switch = basecontroller_tau_reqw(T_from, T_dest);
@@ -107,9 +108,10 @@ void basecontroller_begin_warming(float T_current, float T_destination, uint32_t
 #endif
 }
 
-void basecontroller_begin_cooling(float T_current, float T_destination, uint32_t time) {
+void basecontroller_begin_cooling() {
+    float T_current = ds18s20_get_temperature();
     // Check reasonability of desired switch
-    if ((T_current > T_destination) && (T_current - T_destination < 0.25)) {
+    if ((T_current > T_MIN) && (T_current - T_MIN < 0.25)) {
         // We would switch again shortly after this switch, so ignore the command!
 #ifdef INFO
         uart_puts_P(PSTR(CR));
@@ -126,9 +128,9 @@ void basecontroller_begin_cooling(float T_current, float T_destination, uint32_t
     // Switch phase
     relais_set(1);
     T_from = T_current;
-    T_dest = T_destination;
+    T_dest = T_MIN;
     counter = 0;
-    starttime = time;
+    starttime = rtc_getTime();
     basecontroller_state = BASE_COOLING;
     // Predict next phase switch
     tau_switch = basecontroller_tau_reqc(T_from, T_dest);
@@ -156,35 +158,36 @@ void basecontroller_begin_cooling(float T_current, float T_destination, uint32_t
 #endif
 }
 
-void basecontroller_init(float T_current, uint32_t time) {
+void basecontroller_init() {
     T_MIN = T_MIN_INIT;
     T_MAX = T_MAX_INIT;
-    T_from = T_current;
+    T_from = ds18s20_get_temperature();
     tau_cooling = TAU_COOLING_INIT;
     tau_warming = TAU_WARMING_INIT;
-    starttime = time;
+    starttime = rtc_getTime();
     counter = 0;
-    if (T_current >= T_MAX) {
-        basecontroller_begin_cooling(T_current, T_MIN, time);
+    if (ds18s20_get_temperature() >= T_MAX) {
+        basecontroller_begin_cooling();
     } else {
-        basecontroller_begin_warming(T_current, T_MAX, time);
+        basecontroller_begin_warming();
     }
 }
 
-void basecontroller_poll(float T_current, uint32_t time) {
-    counter = time - starttime;
+void basecontroller_poll() {
+    float T_current = ds18s20_get_temperature();
+    counter = rtc_getTime() - starttime;
     switch (basecontroller_state) {
     case BASE_COOLING: {
         // Take tau_switch only into account, if we're targeting an intermediate temperature
         if ((T_dest != T_MIN && counter >= tau_switch) || T_current <= T_MIN) {
-            basecontroller_begin_warming(T_current, T_MAX, time);
+            basecontroller_begin_warming();
         }
         break;
     }
     case BASE_WARMING: {
         // Take tau_switch only into account, if we're targeting an intermediate temperature
         if ((T_dest != T_MAX && counter >= tau_switch) || T_current >= T_MAX) {
-            basecontroller_begin_cooling(T_current, T_MIN, time);
+            basecontroller_begin_cooling();
         }
         break;
     }

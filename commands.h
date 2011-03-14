@@ -21,12 +21,6 @@
 #define COMMAND_WARMING     "warming"
 #define COMMAND_SET_T_MIN   "set t_min"
 #define COMMAND_SET_T_MAX   "set t_max"
-#define COMMAND_DSC         "dsc"
-#define COMMAND_TLR         "tlr"
-
-// Parameters
-#define PARAM_DSC_LOAD      "load"
-#define PARAM_DSC_UNLOAD    "unload"
 
 void command_eval(const char *command);
 

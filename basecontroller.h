@@ -31,14 +31,10 @@ void basecontroller_set_t_min(float t_min);
 void basecontroller_set_t_max(float t_max);
 uint16_t basecontroller_get_tau_cooling(void);
 uint16_t basecontroller_get_tau_warming(void);
-//float basecontroller_ac(void);
-//float basecontroller_aw(void);
-//uint16_t basecontroller_tau_reqc(float T_from, float T_dest);
-//uint16_t basecontroller_tau_reqw(float T_from, float T_dest);
-void basecontroller_begin_warming(float T_current, float T_dest, uint32_t time);
-void basecontroller_begin_cooling(float T_current, float T_dest, uint32_t time);
-void basecontroller_init(float T_current, uint32_t time);
-void basecontroller_poll(float T_current, uint32_t time);
+void basecontroller_begin_warming();
+void basecontroller_begin_cooling();
+void basecontroller_init();
+void basecontroller_poll();
 basecontroller_states basecontroller_get_state(void);
 
 #endif /* BASECONTROLLER_H_ */

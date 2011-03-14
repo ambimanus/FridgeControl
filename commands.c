@@ -11,7 +11,7 @@ void command_eval(const char *command) {
     if (!strcmp_P(command, PSTR(COMMAND_HELLO))) {
         // Print welcome
         uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(" Hello, this is **** FridgeControl **** !"));
+        uart_puts_P(PSTR(" Hello, this is **** FridgeControl ****"));
         uart_puts_P(PSTR(CR));
         command_eval(COMMAND_HELP);
         command_eval(COMMAND_STATUS);
@@ -38,11 +38,6 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > set t_max\tRedefine T_MAX."));
         uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > dsc\t\tDSC control signal."));
-//      uart_puts_P(PSTR(CR));
-//      uart_puts_P(PSTR("  > tlr\t\tTLR control signal."));
-        // TODO
-        uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(" => LEDs explanation:"));
         uart_puts_P(PSTR(CR));
@@ -52,9 +47,6 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > LED 2\tFridge: flashes while cooling."));
         uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > LED 3\tDSC: flashes while active."));
-        uart_puts_P(PSTR(CR));
-        // TODO
         uart_puts_P(PSTR(CR));
     } else if (!strcmp_P(command, PSTR(COMMAND_STATUS))) {
         char buf_s[32];
@@ -108,15 +100,6 @@ void command_eval(const char *command) {
         case BASE_WARMING: uart_puts_P(PSTR("'warming'.")); break;
         }
         uart_puts_P(PSTR(CR));
-        // Print control-signal status
-        uart_puts_P(PSTR("  > DSC module is in state "));
-        switch (dsc_get_state()) {
-        case DSC_IDLE: uart_puts_P(PSTR("'idle'.")); break;
-        case DSC_WAIT_RANDOM: uart_puts_P(PSTR("'wait_random'.")); break;
-        case DSC_WAIT_RESTORE: uart_puts_P(PSTR("'wait_restore'.")); break;
-        }
-        uart_puts_P(PSTR(CR));
-        // TODO
         uart_puts_P(PSTR(CR));
     } else if (!strcmp_P(command, PSTR(COMMAND_TIME))) {
         // Show time
@@ -143,16 +126,14 @@ void command_eval(const char *command) {
         speaker_tune_imperial();
     } else if (!strcmp_P(command, PSTR(COMMAND_COOLING))) {
         // Enable cooling
-        basecontroller_begin_cooling(ds18s20_get_temperature(),
-                basecontroller_get_t_min(), rtc_getTime());
+        basecontroller_begin_cooling();
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(" => Mode 'cooling'."));
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(CR));
     } else if (!strcmp_P(command, PSTR(COMMAND_WARMING))) {
         // Disable cooling
-        basecontroller_begin_warming(ds18s20_get_temperature(),
-                basecontroller_get_t_max(), rtc_getTime());
+        basecontroller_begin_warming();
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(" => Mode 'warming'."));
         uart_puts_P(PSTR(CR));
@@ -233,86 +214,6 @@ void command_eval(const char *command) {
                 break;
             }
         }
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(CR));
-    } else if (!strcmp_P(command, PSTR(COMMAND_DSC))) {
-        // Line buffer (32 chars)
-        char line[32];
-        // Read load/unload parameter
-        uint8_t doUnload = -1;
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > DSC control signal received."));
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > Specify mode (load/unload): "));
-        while (1) {
-            // Read line
-            uart_gets(line, '\0', sizeof(line), USART_TIMEOUT);
-            // Check timeout
-            if (uart_get_timeout()) {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Input timeout! Command "));
-                uart_puts_P(PSTR(COMMAND_DSC));
-                uart_puts_P(PSTR(" aborted, try again."));
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(CR));
-                return;
-            }
-            // Evaluate received line
-            if (!strcmp_P(line, PSTR(PARAM_DSC_LOAD))) {
-                doUnload = 0;
-                break;
-            } else if (!strcmp_P(line, PSTR(PARAM_DSC_UNLOAD))) {
-                doUnload = 1;
-                break;
-            } else {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Parameter not recognized."));
-                uart_puts_P(PSTR(" Send 'load' or 'unload': "));
-            }
-        }
-        // Read spread parameter
-        uint16_t spread = -1;
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > Specify spread in seconds: "));
-        while (1) {
-            // Read line
-            uart_gets(line, '\0', sizeof(line), USART_TIMEOUT);
-            // Check timeout
-            if (uart_get_timeout()) {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Input timeout! Command "));
-                uart_puts_P(PSTR(COMMAND_DSC));
-                uart_puts_P(PSTR(" aborted, try again."));
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(CR));
-                return;
-            }
-            // Evaluate received line
-            spread = atoi(line);
-            if (spread < 0) {
-                uart_puts_P(PSTR(" => Negative value detected. Try again: "));
-            } else {
-                break;
-            }
-        }
-        // Start DSC
-        dsc_start(doUnload, (uint16_t) spread);
-        // Print success message
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(" => Starting DSC ("));
-        if (doUnload == 0) {
-            uart_puts_P(PSTR(PARAM_DSC_LOAD));
-        } else {
-            uart_puts_P(PSTR(PARAM_DSC_UNLOAD));
-        }
-        uart_puts_P(PSTR("), spread="));
-        itoa(spread, line, 10);
-        uart_puts(line);
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(CR));
-    } else if (!strcmp_P(command, PSTR(COMMAND_TLR))) {
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(" => Not implemented yet."));
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(CR));
     } else {

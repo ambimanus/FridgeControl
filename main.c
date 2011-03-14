@@ -114,9 +114,7 @@ int main(void) {
                 uart_puts_P(PSTR(CR));
             } else {
                 // poll fridge controller
-                basecontroller_poll(temperature, rtc_getTime());
-                // poll dsc
-                dsc_poll(temperature, rtc_getTime());
+                basecontroller_poll();
             }
         }
         // Check for received character

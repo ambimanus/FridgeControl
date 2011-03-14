@@ -33,7 +33,6 @@
 #include "commands.h"
 #include "ds18s20.h"
 #include "basecontroller.h"
-#include "dsc.h"
 #include "simulator.h"
 #include <avr/pgmspace.h>
 #include <stdio.h>
