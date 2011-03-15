@@ -18,11 +18,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "myavr.h"
-#include "uart.h"
-#include "rtc.h"
+#include "util/myavr.h"
+#include "util/uart.h"
+#include "util/rtc.h"
+#include "util/ds18s20.h"
+#include "util/random.h"
 #include "commands.h"
-#include "ds18s20.h"
 #include "basecontroller.h"
 #include "simulator.h"
 

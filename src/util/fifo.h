@@ -3,8 +3,8 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <ds18s20.h>
-#include <rtc.h>
+#include "ds18s20.h"
+#include "rtc.h"
 
 typedef struct {
     uint8_t volatile count;       // # Zeichen im Puffer
