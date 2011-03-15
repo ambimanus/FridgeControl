@@ -1,0 +1,10 @@
+# Diese Datei ist maschinell erzeugt. Bitte verwenden Sie das
+# Einstellungs-Menü im minicom-Programm, um die Einstellungen
+# zu ändern.
+pu port             /dev/ttyUSB0
+pu baudrate         38400
+pu minit            
+pu mreset           
+pu rtscts           No 
+pu xonxoff          Yes
+pu localecho        Yes

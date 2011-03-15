@@ -1,0 +1,3 @@
+- sudo aptitude install gcc-avr avr-libc avrdude minicom
+- Kopiere 15_usbprog.rules nach /etc/udev/rules.d/, damit nichtprivilegierte
+  User den Programmer nutzen dürfen
