@@ -5,7 +5,7 @@
  *      Author: chh
  */
 
-#include "basecontroller.h"
+#include "fridge.h"
 
 float T_MIN;
 float T_MAX;
@@ -16,49 +16,49 @@ uint16_t tau_warming;
 uint16_t tau_switch;
 uint32_t starttime = 0L;
 uint16_t counter;
-basecontroller_states basecontroller_state = BASE_WARMING;
+fridge_states fridge_state = BASE_WARMING;
 
-float inline basecontroller_get_t_min() {
+float inline fridge_get_t_min() {
     return T_MIN;
 }
 
-float inline basecontroller_get_t_max() {
+float inline fridge_get_t_max() {
     return T_MAX;
 }
 
-void basecontroller_set_t_min(float t_min) {
+void fridge_set_t_min(float t_min) {
     T_MIN = t_min;
 }
 
-void basecontroller_set_t_max(float t_max) {
+void fridge_set_t_max(float t_max) {
     T_MAX = t_max;
 }
 
-uint16_t inline basecontroller_get_tau_cooling() {
+uint16_t inline fridge_get_tau_cooling() {
     return tau_cooling;
 }
 
-uint16_t inline basecontroller_get_tau_warming() {
+uint16_t inline fridge_get_tau_warming() {
     return tau_warming;
 }
 
-float inline basecontroller_ac(void) {
+float inline fridge_ac(void) {
     return (T_MIN - T_MAX) / ((float) tau_cooling);
 }
 
-float inline basecontroller_aw(void) {
+float inline fridge_aw(void) {
     return (T_MAX - T_MIN) / ((float) tau_warming);
 }
 
-uint16_t inline basecontroller_tau_reqc(float T_from, float T_dest) {
-    return ROUND_UINT_16((T_dest - T_from) / basecontroller_ac());
+uint16_t inline fridge_tau_reqc(float T_from, float T_dest) {
+    return ROUND_UINT_16((T_dest - T_from) / fridge_ac());
 }
 
-uint16_t inline basecontroller_tau_reqw(float T_from, float T_dest) {
-    return ROUND_UINT_16((T_dest - T_from) / basecontroller_aw());
+uint16_t inline fridge_tau_reqw(float T_from, float T_dest) {
+    return ROUND_UINT_16((T_dest - T_from) / fridge_aw());
 }
 
-void basecontroller_begin_warming() {
+void fridge_begin_warming() {
     float T_current = ds18s20_get_temperature();
     // Check reasonability of desired switch
     if ((T_current < T_MAX) && (T_MAX - T_current < 0.25)) {
@@ -81,9 +81,9 @@ void basecontroller_begin_warming() {
     T_dest = T_MAX;
     counter = 0;
     starttime = rtc_getTime();
-    basecontroller_state = BASE_WARMING;
+    fridge_state = BASE_WARMING;
     // Predict next phase switch
-    tau_switch = basecontroller_tau_reqw(T_from, T_dest);
+    tau_switch = fridge_tau_reqw(T_from, T_dest);
 #ifdef INFO
     char buf_s[32];
     uart_puts_P(PSTR(CR));
@@ -108,7 +108,7 @@ void basecontroller_begin_warming() {
 #endif
 }
 
-void basecontroller_begin_cooling() {
+void fridge_begin_cooling() {
     float T_current = ds18s20_get_temperature();
     // Check reasonability of desired switch
     if ((T_current > T_MIN) && (T_current - T_MIN < 0.25)) {
@@ -131,9 +131,9 @@ void basecontroller_begin_cooling() {
     T_dest = T_MIN;
     counter = 0;
     starttime = rtc_getTime();
-    basecontroller_state = BASE_COOLING;
+    fridge_state = BASE_COOLING;
     // Predict next phase switch
-    tau_switch = basecontroller_tau_reqc(T_from, T_dest);
+    tau_switch = fridge_tau_reqc(T_from, T_dest);
 #ifdef INFO
     char buf_s[32];
     uart_puts_P(PSTR(CR));
@@ -158,7 +158,7 @@ void basecontroller_begin_cooling() {
 #endif
 }
 
-void basecontroller_init() {
+void fridge_init() {
     T_MIN = T_MIN_INIT;
     T_MAX = T_MAX_INIT;
     T_from = ds18s20_get_temperature();
@@ -167,33 +167,33 @@ void basecontroller_init() {
     starttime = rtc_getTime();
     counter = 0;
     if (ds18s20_get_temperature() >= T_MAX) {
-        basecontroller_begin_cooling();
+        fridge_begin_cooling();
     } else {
-        basecontroller_begin_warming();
+        fridge_begin_warming();
     }
 }
 
-void basecontroller_poll() {
+void fridge_poll() {
     float T_current = ds18s20_get_temperature();
     counter = rtc_getTime() - starttime;
-    switch (basecontroller_state) {
+    switch (fridge_state) {
     case BASE_COOLING: {
         // Take tau_switch only into account, if we're targeting an intermediate temperature
         if ((T_dest != T_MIN && counter >= tau_switch) || T_current <= T_MIN) {
-            basecontroller_begin_warming();
+            fridge_begin_warming();
         }
         break;
     }
     case BASE_WARMING: {
         // Take tau_switch only into account, if we're targeting an intermediate temperature
         if ((T_dest != T_MAX && counter >= tau_switch) || T_current >= T_MAX) {
-            basecontroller_begin_cooling();
+            fridge_begin_cooling();
         }
         break;
     }
     }
 }
 
-basecontroller_states basecontroller_get_state() {
-    return basecontroller_state;
+fridge_states fridge_get_state() {
+    return fridge_state;
 }
