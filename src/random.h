@@ -8,7 +8,9 @@
 #ifndef RANDOM_H_
 #define RANDOM_H_
 
-#include "main.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <avr/pgmspace.h>
 
 uint16_t random_get_seed(void);
 uint32_t random_get_random(int32_t low, int32_t high);

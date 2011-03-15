@@ -5,7 +5,9 @@
  *      Author: chh
  */
 
-#include "main.h"
+#include <stdio.h>
+#include "myavr.h"
+#include "uart.h"
 
 #ifndef DS18S20_H_
 #define DS18S20_H_

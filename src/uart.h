@@ -13,6 +13,8 @@
 //#define USART_BAUDRATE 9600UL
 #define BAUD_PRESCALE       (((F_CPU / (USART_BAUDRATE * 16UL))) - 1)
 #define INTERRUPT_ENABLED
+#define CR                  "\r\n"
+#define PROMPT              "> "
 
 #ifndef INTERRUPT_ENABLED
     #include <avr/io.h>

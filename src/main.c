@@ -55,7 +55,7 @@ int main(void) {
     if (SIMULATE == 1) {
         uart_puts_P(PSTR(" (simulation mode)"));
         // Start fridge control unit
-        basecontroller_init(T_MIN_INIT, rtc_getTime());
+        basecontroller_init();
         temperature = simulator_get_temperature();
     } else {
         // Perform first measurement
@@ -63,7 +63,7 @@ int main(void) {
         _delay_ms(2000);
         temperature = ds18s20_read_temperature();
         // Start fridge control unit
-        basecontroller_init(temperature, rtc_getTime());
+        basecontroller_init();
     }
     uart_puts_P(PSTR("   => ready."));
     uart_puts_P(PSTR(CR));

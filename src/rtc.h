@@ -8,9 +8,9 @@
 #ifndef RTC_H_
 #define RTC_H_
 
-#include "main.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "myavr.h"
 
 #define DEBOUNCE    250L        // debounce clock (256Hz ~ 4msec)
 
