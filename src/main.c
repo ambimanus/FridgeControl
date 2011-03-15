@@ -8,54 +8,34 @@
 #include "main.h"
 
 int main(void) {
-
     /****************************
      * Vars                     *
      ****************************/
-    // random seed
-    uint16_t seed = random_get_seed();
-    // 'receive' flag
-    int rx = -1;
-    // Line buffer (64 chars)
-    char line[64];
-    // Current temperature
-    float temperature;
-    // temperature report counter
-    uint8_t reportcounter = -1;
-
+    uint8_t button = 0;
     /****************************
      * Init                     *
      ****************************/
-    // Init ds18s20
-    ds18s20_init();
+    // Init clock
+    rtc_init();
     // Init LEDs
     led_init();
     // Init speaker
     speaker_init();
     // Init UART
     uart_init();
-    // Init relais
-    relais_init();
-    // Init clock
-    rtc_init();
-    // Init rng
-    srand(seed);
-    srandom(seed);
 
     /****************************
      * Startup                  *
     ****************************/
     // Welcome message
-    uart_puts_P(PSTR(" Starting fridge control unit..."));
-    // Perform first measurement
-    ds18s20_start_measure();
-    _delay_ms(2000);
-    temperature = ds18s20_read_temperature();
-    // Start fridge control unit
-    fridge_init();
-    uart_puts_P(PSTR("   => ready."));
+    uart_puts_P(PSTR("Hello World!"));
     uart_puts_P(PSTR(CR));
-    command_eval(COMMAND_HELLO);
+    char buf_s[32];
+    uart_puts_P(PSTR("I was switched on "));
+    sprintf(buf_s, "%d", rtc_getTime());
+    uart_puts(buf_s);
+    uart_puts_P(PSTR(" seconds ago."));
+    uart_puts_P(PSTR(CR));
 
     /****************************
      * Main loop                *
@@ -69,54 +49,80 @@ int main(void) {
             rtc_clearFlag();
             // Flash led 0
             led_set(0, 1);
-            // read current temperature
-            temperature = ds18s20_read_temperature();
-            // Increase report counter
-            reportcounter++;
-            // Report temperature every x seconds
-            if (reportcounter == REPORT_INTERVAL) {
-                reportcounter = 0;
-                char buf_s[32];
-                sprintf(buf_s, "#\t%lu", rtc_getTime());
-                uart_puts(buf_s);
-                uart_puts_P(PSTR("\t"));
-                sprintf(buf_s, "%0#.1f", (double) temperature);
-                uart_puts(buf_s);
-                uart_puts_P(PSTR(CR));
-            }
-            // start next measure
-            uint8_t ret = ds18s20_start_measure();
-            if (ret) {
-                command_eval(COMMAND_TIME);
-                uart_puts_P(PSTR("    No response from sensor."));
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(CR));
-            } else {
-                // poll fridge controller
-                fridge_poll();
-            }
+            led_chaser();
         }
-        // Check for received character
-        rx = uart_getc_nowait();
-        // If char received, read whole line
-        if (rx != -1) {
-            // Enable led 1 as 'receiving' flag
-            led_set(1,1);
-            // Read line
-            uart_gets(line, rx, sizeof(line), USART_TIMEOUT);
-            // Check timeout
-            if (uart_get_timeout()) {
-                uart_puts_P(PSTR("   => Input timeout! Try again."));
+        // Check buttons
+        if (button == 0) {
+            button = button_read();
+            if (button > 0) {
+                char buf_s[32];
+                uart_puts_P(PSTR("Button "));
+                sprintf(buf_s, "%d", button);
+                uart_puts(buf_s);
+                uart_puts_P(PSTR(" pressed."));
                 uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(CR));
-            } else {
-                // Evaluate received line
-                command_eval(line);
             }
-            // Disable led 1
-            led_set(1, 0);
+        } else {
+            uint8_t btn = button_read();
+            if (btn == 0) {
+                char buf_s[32];
+                uart_puts_P(PSTR("Button "));
+                sprintf(buf_s, "%d", button);
+                uart_puts(buf_s);
+                uart_puts_P(PSTR(" released."));
+                uart_puts_P(PSTR(CR));
+            }
+            button = btn;
+        }
+        // Receive data from UART
+        char line[64];
+        if (receive(line, sizeof(line))) {
+            uart_puts_P(PSTR("Received:"));
+            uart_puts_P(PSTR(CR));
+            uart_puts(line);
+            uart_puts_P(PSTR(CR));
         }
         // Wait till next loop
         _delay_ms(100);
     }
+}
+
+void led_chaser(void) {
+    for(int i = 0; i < 8; i++) {
+        // Enable led i
+        led_set(i, 1);
+        _delay_ms(10);
+        // Disable led 0
+        led_set(i, 0);
+        _delay_ms(5);
+    }
+}
+
+/**
+ * This function tries to read data from UART into the given buffer.
+ * It returns 1 on success, 0 otherwise.
+ */
+uint8_t receive(char* line, uint8_t maxlen) {
+    // 'receive' flag
+    int rx = -1;
+    // Check for received character
+    rx = uart_getc_nowait();
+    // If char received, read whole line
+    if (rx != -1) {
+        // Enable led 1 as 'receiving' flag
+        led_set(1,1);
+        // Read line
+        uart_gets(line, rx, maxlen, USART_TIMEOUT);
+        // Disable led 1
+        led_set(1, 0);
+        // Check timeout
+        if (uart_get_timeout()) {
+            uart_puts_P(PSTR("   => Input timeout! Try again."));
+            uart_puts_P(PSTR(CR));
+            uart_puts_P(PSTR(CR));
+            return 0;
+        }
+        return 1;
+    }
+    return 0;
 }

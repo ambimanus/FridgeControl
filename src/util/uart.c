@@ -189,6 +189,7 @@
             // Read next char
             NextChar = uart_getc_wait(timeout);
         }
+        uart_puts_P(PSTR(CR));
         // Add '\0' to finish string
         *Buffer = '\0';
         // Check timeout
