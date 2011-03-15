@@ -19,6 +19,6 @@
 #include "util/ds18s20.h"
 #include "util/random.h"
 #include "commands.h"
-#include "basecontroller.h"
+#include "fridge.h"
 
 #endif /* MAIN_H_ */

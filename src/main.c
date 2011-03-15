@@ -52,7 +52,7 @@ int main(void) {
     _delay_ms(2000);
     temperature = ds18s20_read_temperature();
     // Start fridge control unit
-    basecontroller_init();
+    fridge_init();
     uart_puts_P(PSTR("   => ready."));
     uart_puts_P(PSTR(CR));
     command_eval(COMMAND_HELLO);
@@ -93,7 +93,7 @@ int main(void) {
                 uart_puts_P(PSTR(CR));
             } else {
                 // poll fridge controller
-                basecontroller_poll();
+                fridge_poll();
             }
         }
         // Check for received character

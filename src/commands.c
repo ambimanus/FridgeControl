@@ -66,19 +66,19 @@ void command_eval(const char *command) {
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > T_MIN = "));
-        dtostrf(basecontroller_get_t_min(), -1, 3, &buf_s[0]);
+        dtostrf(fridge_get_t_min(), -1, 3, &buf_s[0]);
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > T_MAX = "));
-        dtostrf(basecontroller_get_t_max(), -1, 3, &buf_s[0]);
+        dtostrf(fridge_get_t_max(), -1, 3, &buf_s[0]);
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > tau_cooling = "));
-        dtostrf(basecontroller_get_tau_cooling(), -1, 3, &buf_s[0]);
+        dtostrf(fridge_get_tau_cooling(), -1, 3, &buf_s[0]);
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > tau_warming = "));
-        dtostrf(basecontroller_get_tau_warming(), -1, 3, &buf_s[0]);
+        dtostrf(fridge_get_tau_warming(), -1, 3, &buf_s[0]);
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
 //      // Print relais status
@@ -91,7 +91,7 @@ void command_eval(const char *command) {
 //      uart_puts_P(PSTR(CR));
         // Print basecontroller status
         uart_puts_P(PSTR("  > BaseController is in Mode "));
-        switch (basecontroller_get_state()) {
+        switch (fridge_get_state()) {
         case BASE_COOLING: uart_puts_P(PSTR("'cooling'.")); break;
         case BASE_WARMING: uart_puts_P(PSTR("'warming'.")); break;
         }
@@ -122,14 +122,14 @@ void command_eval(const char *command) {
         speaker_tune_imperial();
     } else if (!strcmp_P(command, PSTR(COMMAND_COOLING))) {
         // Enable cooling
-        basecontroller_begin_cooling();
+        fridge_begin_cooling();
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(" => Mode 'cooling'."));
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(CR));
     } else if (!strcmp_P(command, PSTR(COMMAND_WARMING))) {
         // Disable cooling
-        basecontroller_begin_warming();
+        fridge_begin_warming();
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(" => Mode 'warming'."));
         uart_puts_P(PSTR(CR));
@@ -139,7 +139,7 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > T_MIN currently is "));
         char buf_s[8];
-        sprintf(buf_s, "%0#.1f", (double) basecontroller_get_t_min());
+        sprintf(buf_s, "%0#.1f", (double) fridge_get_t_min());
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > Enter new T_MIN: "));
@@ -163,10 +163,10 @@ void command_eval(const char *command) {
                 uart_puts_P(PSTR(CR));
                 uart_puts_P(PSTR(" => Parameter not recognized."));
             } else {
-                basecontroller_set_t_min(t_min);
+                fridge_set_t_min(t_min);
                 uart_puts_P(PSTR(CR));
                 uart_puts_P(PSTR(" => T_MIN changed to "));
-                sprintf(buf_s, "%0#.1f", (double) basecontroller_get_t_min());
+                sprintf(buf_s, "%0#.1f", (double) fridge_get_t_min());
                 uart_puts(buf_s);
                 break;
             }
@@ -178,7 +178,7 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > T_MAX currently is "));
         char buf_s[8];
-        sprintf(buf_s, "%0#.1f", (double) basecontroller_get_t_max());
+        sprintf(buf_s, "%0#.1f", (double) fridge_get_t_max());
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > Enter new T_MAX: "));
@@ -202,10 +202,10 @@ void command_eval(const char *command) {
                 uart_puts_P(PSTR(CR));
                 uart_puts_P(PSTR(" => Parameter not recognized."));
             } else {
-                basecontroller_set_t_max(t_max);
+                fridge_set_t_max(t_max);
                 uart_puts_P(PSTR(CR));
                 uart_puts_P(PSTR(" => T_MAX changed to "));
-                sprintf(buf_s, "%0#.1f", (double) basecontroller_get_t_max());
+                sprintf(buf_s, "%0#.1f", (double) fridge_get_t_max());
                 uart_puts(buf_s);
                 break;
             }

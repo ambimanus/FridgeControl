@@ -1,5 +1,5 @@
 /*
- * basecontroller.h
+ * fridge.h
  *
  *  Created on: 06.03.2009
  *      Author: chh
@@ -24,18 +24,18 @@
 typedef enum {
     BASE_COOLING,
     BASE_WARMING
-} basecontroller_states;
+} fridge_states;
 
-float basecontroller_get_t_min(void);
-float basecontroller_get_t_max(void);
-void basecontroller_set_t_min(float t_min);
-void basecontroller_set_t_max(float t_max);
-uint16_t basecontroller_get_tau_cooling(void);
-uint16_t basecontroller_get_tau_warming(void);
-void basecontroller_begin_warming(void);
-void basecontroller_begin_cooling(void);
-void basecontroller_init(void);
-void basecontroller_poll(void);
-basecontroller_states basecontroller_get_state(void);
+float fridge_get_t_min(void);
+float fridge_get_t_max(void);
+void fridge_set_t_min(float t_min);
+void fridge_set_t_max(float t_max);
+uint16_t fridge_get_tau_cooling(void);
+uint16_t fridge_get_tau_warming(void);
+void fridge_begin_warming(void);
+void fridge_begin_cooling(void);
+void fridge_init(void);
+void fridge_poll(void);
+fridge_states fridge_get_state(void);
 
 #endif /* BASECONTROLLER_H_ */
