@@ -49,30 +49,16 @@ int main(void) {
             rtc_clearFlag();
             // Flash led 0
             led_set(0, 1);
-            led_chaser();
         }
         // Check buttons
-        if (button == 0) {
-            button = button_read();
-            if (button > 0) {
-                char buf_s[32];
-                uart_puts_P(PSTR("Button "));
-                sprintf(buf_s, "%d", button);
-                uart_puts(buf_s);
-                uart_puts_P(PSTR(" pressed."));
-                uart_puts_P(PSTR(CR));
-            }
-        } else {
-            uint8_t btn = button_read();
-            if (btn == 0) {
-                char buf_s[32];
-                uart_puts_P(PSTR("Button "));
-                sprintf(buf_s, "%d", button);
-                uart_puts(buf_s);
-                uart_puts_P(PSTR(" released."));
-                uart_puts_P(PSTR(CR));
-            }
-            button = btn;
+        button = button_read();
+        if (button > 0) {
+            char buf_s[32];
+            uart_puts_P(PSTR("Button "));
+            sprintf(buf_s, "%d", button);
+            uart_puts(buf_s);
+            uart_puts_P(PSTR(" pressed."));
+            uart_puts_P(PSTR(CR));
         }
         // Receive data from UART
         char line[64];
@@ -84,17 +70,6 @@ int main(void) {
         }
         // Wait till next loop
         _delay_ms(100);
-    }
-}
-
-void led_chaser(void) {
-    for(int i = 0; i < 8; i++) {
-        // Enable led i
-        led_set(i, 1);
-        _delay_ms(10);
-        // Disable led 0
-        led_set(i, 0);
-        _delay_ms(5);
     }
 }
 
