@@ -17,10 +17,6 @@
 #define COMMAND_TIME        "time"
 #define COMMAND_INDY        "indy"
 #define COMMAND_IMPERIAL    "imperial"
-#define COMMAND_COOLING     "cooling"
-#define COMMAND_WARMING     "warming"
-#define COMMAND_SET_T_MIN   "set t_min"
-#define COMMAND_SET_T_MAX   "set t_max"
 
 void command_eval(const char *command);
 

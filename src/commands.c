@@ -30,14 +30,6 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > imperial\tPlay Imperial March Theme."));
         uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > cooling\tSwitch to mode 'cooling'."));
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > warming\tSwitch to mode 'warming'."));
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > set t_min\tRedefine T_MIN."));
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > set t_max\tRedefine T_MAX."));
-        uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(" => LEDs explanation:"));
         uart_puts_P(PSTR(CR));
@@ -120,98 +112,6 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR(CR));
         speaker_tune_imperial();
-    } else if (!strcmp_P(command, PSTR(COMMAND_COOLING))) {
-        // Enable cooling
-        fridge_begin_cooling();
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(" => Mode 'cooling'."));
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(CR));
-    } else if (!strcmp_P(command, PSTR(COMMAND_WARMING))) {
-        // Disable cooling
-        fridge_begin_warming();
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(" => Mode 'warming'."));
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(CR));
-    } else if (!strcmp_P(command, PSTR(COMMAND_SET_T_MIN))) {
-        // Redefine T_MIN
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > T_MIN currently is "));
-        char buf_s[8];
-        sprintf(buf_s, "%0#.1f", (double) fridge_get_t_min());
-        uart_puts(buf_s);
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > Enter new T_MIN: "));
-        while (1) {
-            // Read line
-            uart_gets(buf_s, '\0', sizeof(buf_s), USART_TIMEOUT);
-            // Check timeout
-            if (uart_get_timeout()) {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Input timeout! Command "));
-                uart_puts_P(PSTR(COMMAND_SET_T_MIN));
-                uart_puts_P(PSTR(" aborted, try again."));
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(CR));
-                return;
-            }
-            // Evaluate received line
-            float t_min = -200.0f;
-            t_min = atof(buf_s);
-            if (t_min == -200.0f) {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Parameter not recognized."));
-            } else {
-                fridge_set_t_min(t_min);
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => T_MIN changed to "));
-                sprintf(buf_s, "%0#.1f", (double) fridge_get_t_min());
-                uart_puts(buf_s);
-                break;
-            }
-        }
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(CR));
-    } else if (!strcmp_P(command, PSTR(COMMAND_SET_T_MAX))) {
-        // Redefine T_MIN
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > T_MAX currently is "));
-        char buf_s[8];
-        sprintf(buf_s, "%0#.1f", (double) fridge_get_t_max());
-        uart_puts(buf_s);
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR("  > Enter new T_MAX: "));
-        while (1) {
-            // Read line
-            uart_gets(buf_s, '\0', sizeof(buf_s), USART_TIMEOUT);
-            // Check timeout
-            if (uart_get_timeout()) {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Input timeout! Command "));
-                uart_puts_P(PSTR(COMMAND_SET_T_MAX));
-                uart_puts_P(PSTR(" aborted, try again."));
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(CR));
-                return;
-            }
-            // Evaluate received line
-            float t_max = -200.0f;
-            t_max = atof(buf_s);
-            if (t_max == -200.0f) {
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => Parameter not recognized."));
-            } else {
-                fridge_set_t_max(t_max);
-                uart_puts_P(PSTR(CR));
-                uart_puts_P(PSTR(" => T_MAX changed to "));
-                sprintf(buf_s, "%0#.1f", (double) fridge_get_t_max());
-                uart_puts(buf_s);
-                break;
-            }
-        }
-        uart_puts_P(PSTR(CR));
-        uart_puts_P(PSTR(CR));
     } else {
         // Unknown command
         uart_puts_P(PSTR(CR));
