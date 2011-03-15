@@ -62,11 +62,7 @@ void command_eval(const char *command) {
         uart_puts_P(PSTR(CR));
         // Print device values
         uart_puts_P(PSTR("  > T_current = "));
-        if (SIMULATE == 1) {
-            dtostrf(simulator_get_temperature(), -1, 3, &buf_s[0]);
-        } else {
-            dtostrf(ds18s20_get_temperature(), -1, 3, &buf_s[0]);
-        }
+        dtostrf(ds18s20_get_temperature(), -1, 3, &buf_s[0]);
         uart_puts(buf_s);
         uart_puts_P(PSTR(CR));
         uart_puts_P(PSTR("  > T_MIN = "));

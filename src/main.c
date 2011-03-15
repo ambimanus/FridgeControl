@@ -26,13 +26,8 @@ int main(void) {
     /****************************
      * Init                     *
      ****************************/
-    if (SIMULATE) {
-        // Init simulator
-        simulator_init();
-    } else {
-        // Init ds18s20
-        ds18s20_init();
-    }
+    // Init ds18s20
+    ds18s20_init();
     // Init LEDs
     led_init();
     // Init speaker
@@ -52,19 +47,12 @@ int main(void) {
     ****************************/
     // Welcome message
     uart_puts_P(PSTR(" Starting fridge control unit..."));
-    if (SIMULATE == 1) {
-        uart_puts_P(PSTR(" (simulation mode)"));
-        // Start fridge control unit
-        basecontroller_init();
-        temperature = simulator_get_temperature();
-    } else {
-        // Perform first measurement
-        ds18s20_start_measure();
-        _delay_ms(2000);
-        temperature = ds18s20_read_temperature();
-        // Start fridge control unit
-        basecontroller_init();
-    }
+    // Perform first measurement
+    ds18s20_start_measure();
+    _delay_ms(2000);
+    temperature = ds18s20_read_temperature();
+    // Start fridge control unit
+    basecontroller_init();
     uart_puts_P(PSTR("   => ready."));
     uart_puts_P(PSTR(CR));
     command_eval(COMMAND_HELLO);
@@ -82,11 +70,7 @@ int main(void) {
             // Flash led 0
             led_set(0, 1);
             // read current temperature
-            if (SIMULATE == 1) {
-                temperature = simulator_get_temperature();
-            } else {
-                temperature = ds18s20_read_temperature();
-            }
+            temperature = ds18s20_read_temperature();
             // Increase report counter
             reportcounter++;
             // Report temperature every x seconds
@@ -100,13 +84,8 @@ int main(void) {
                 uart_puts(buf_s);
                 uart_puts_P(PSTR(CR));
             }
-            uint8_t ret;
-            if (SIMULATE == 1) {
-                ret = 0;
-            } else {
-                // start next measure
-                ret = ds18s20_start_measure();
-            }
+            // start next measure
+            uint8_t ret = ds18s20_start_measure();
             if (ret) {
                 command_eval(COMMAND_TIME);
                 uart_puts_P(PSTR("    No response from sensor."));

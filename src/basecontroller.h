@@ -12,13 +12,8 @@
 
 #define T_MIN_INIT          7.2f    // degrees celsius
 #define T_MAX_INIT          8.9f    // degrees celsius
-#if SIMULATE
-#define TAU_COOLING_INIT    10.0f   // seconds
-#define TAU_WARMING_INIT    15.0f   // seconds
-#else
 #define TAU_COOLING_INIT    5400.0f // seconds
 #define TAU_WARMING_INIT    9000.0f // seconds
-#endif
 #define ROUND_INT_8(d)      ( (int8_t) ((d) + ((d) > 0 ? 0.5 : -0.5)) )
 #define ROUND_INT_16(d)     ( (int16_t) ((d) + ((d) > 0 ? 0.5 : -0.5)) )
 #define ROUND_INT_32(d)     ( (int32_t) ((d) + ((d) > 0 ? 0.5 : -0.5)) )
