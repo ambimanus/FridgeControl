@@ -4,7 +4,6 @@
 //#define F_CPU             16000000UL
 #define F_CPU               16000348UL  // deviation calculated by rtc
 
-//#include "main.h"
 #include <util/delay.h>
 #include <avr/io.h>
 
