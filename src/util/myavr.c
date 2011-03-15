@@ -82,8 +82,8 @@ void speaker_sound(uint16_t f, uint16_t dur) {
     uint32_t cycles;
     // holdtime in us
     uint32_t holdtime;
-    cycles = ((uint32_t) f * (uint32_t) dur) / 1000UL;
-    holdtime = 16000348UL / (2UL * (uint32_t) f);
+    cycles = (uint32_t) f * (uint32_t) dur / 1000UL;
+    holdtime = 500000UL / (uint32_t) f;
 
     for (uint32_t i = 0; i < cycles; i++) {
         SPEAKER_PORT |= (1 << SPEAKER_PIN);
@@ -95,9 +95,7 @@ void speaker_sound(uint16_t f, uint16_t dur) {
 
 void speaker_tune(uint16_t bpm, uint16_t duration, char note, uint16_t octave) {
     // Dauer:
-    uint32_t tmp_d = bpm;
-    tmp_d = tmp_d * duration;
-    uint32_t dur = 240000/tmp_d;
+    uint32_t dur = 240000UL / ((uint32_t) bpm * (uint32_t) duration);
 
     // Frequenz:
     uint16_t f = 440;
@@ -116,6 +114,7 @@ void speaker_tune(uint16_t bpm, uint16_t duration, char note, uint16_t octave) {
 }
 
 void speaker_tune_indy(void) {
+
     uint16_t bpm = 150;
 
     speaker_tune(bpm, 4, 'e', 1);
@@ -158,6 +157,7 @@ void speaker_tune_indy(void) {
 }
 
 void speaker_tune_imperial(void) {
+
     uint16_t bpm = 112;
 
     speaker_tune(bpm, 4, 'a', 1);
