@@ -71,6 +71,43 @@ void led_set(uint8_t led, uint8_t enable) {
         LED_PORT |= (1 << led);
 }
 
+uint16_t adc_read(uint8_t channel) {
+    // setup
+    uint16_t ret = 0;
+    ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
+    ADMUX = channel;
+    // dummy-readout
+    ADCSRA |= (1<<ADSC);
+    while(ADCSRA & (1<<ADSC)) {}
+    ret = ADCW;
+    // actual readout: mean of 4 measurements
+    ret = 0;
+    for(uint8_t i = 0; i < 4; i++) {
+        ADCSRA |= (1<<ADSC);
+        while(ADCSRA & (1<<ADSC)) {}
+        ret = ret + ADCW;
+    }
+    // setdown
+    ADCSRA &= ~(1<<ADEN);
+    return ret / 4;
+}
+
+uint8_t button_read(void) {
+    // read button port (port 7)
+    uint16_t val = adc_read(7);
+    // debounce
+    port_a_setpin(7, 1);
+    _delay_ms(1);
+    port_a_setpin(7, 1);
+    // calculate button
+    if((val >= 384) && (val <= 424)) {return 1;}
+    else if((val >= 316) && (val <= 356)) {return 2;}
+    else if((val >= 244) && (val <= 284)) {return 3;}
+    else if((val >= 167) && (val <= 207)) {return 4;}
+    else if((val >= 84) && (val <= 124)) {return 5;}
+    else {return 0;}
+}
+
 void speaker_init() {
     // Set speaker pin as output
     SPEAKER_DDR |= (1 << SPEAKER_PIN);

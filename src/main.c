@@ -116,6 +116,25 @@ int main(void) {
             // Disable led 1
             led_set(1, 0);
         }
+        // Check buttons
+        uint8_t btn = button_read();
+        switch (btn) {
+        case 1: uart_puts_P(PSTR(" => Power shortage - will increase temperature range now."));
+                fridge_set_t_min(T_MIN_INIT);
+                fridge_set_t_max(T_MAX_INIT + 2);
+                command_eval(COMMAND_STATUS);
+                break;
+        case 2: uart_puts_P(PSTR(" => Power abundance - will decrease temperature range now."));
+                fridge_set_t_min(T_MIN_INIT - 2);
+                fridge_set_t_max(T_MAX_INIT);
+                command_eval(COMMAND_STATUS);
+                break;
+        case 3: uart_puts_P(PSTR(" => Power balanced - will normalize temperature range now."));
+                fridge_set_t_min(T_MIN_INIT);
+                fridge_set_t_max(T_MAX_INIT);
+                command_eval(COMMAND_STATUS);
+                break;
+        }
         // Wait till next loop
         _delay_ms(100);
     }
