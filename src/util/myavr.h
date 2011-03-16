@@ -39,6 +39,12 @@ void led_init(void);
 void led_set(uint8_t led, uint8_t enable);
 
 /****************************
+ * Buttons                  *
+ ****************************/
+uint16_t adc_read(uint8_t channel);
+uint8_t button_read(void);
+
+/****************************
  * Speaker                  *
  ****************************/
 #define SPEAKER_DDR     DDRD
