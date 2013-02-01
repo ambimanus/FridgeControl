@@ -15,6 +15,7 @@
 #include "util/rtc.h"
 #include "util/ds18s20.h"
 #include "util/random.h"
+#include "util/lcd.h"
 
 void led_chaser(void);
 uint8_t receive(char* line, uint8_t maxlen);

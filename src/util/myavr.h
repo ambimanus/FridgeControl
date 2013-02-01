@@ -55,6 +55,9 @@ uint8_t button_read(void);
 #define SPEAKER_PORT    PORTD
 #define SPEAKER_PIN     7
 
+void delay_ms(uint32_t count);
+void delay_us(uint32_t count);
+
 void speaker_init(void);
 
 /*

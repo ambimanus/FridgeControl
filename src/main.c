@@ -6,6 +6,17 @@
  */
 
 #include "main.h"
+//#include "util/lcd.c"
+
+#define DB4      3
+#define DB5      2
+#define DB6      1
+#define DB7      0
+#define LCD_E    5
+
+#define KS0073_EXTENDED_FUNCTION_REGISTER_ON  0x24   /* |0|010|0100 4-bit mode extension-bit RE = 1 */
+#define KS0073_EXTENDED_FUNCTION_REGISTER_OFF 0x20   /* |0|000|1001 4 lines mode */
+#define KS0073_4LINES_MODE                    0x09   /* |0|001|0000 4-bit mode, extension-bit RE = 0 */
 
 int main(void) {
     /****************************
@@ -23,6 +34,45 @@ int main(void) {
     speaker_init();
     // Init UART
     uart_init();
+    // Init LCD
+    DDRB |= 0xFF; // set port as output
+    PORTB &= 0x00; // set all pins low
+    delay_us(20000);
+    port_b_setpin(8, 0); // GND
+    port_b_setpin(9, 1); // VCC
+    //port_b_setpin(4, 1); // light
+    delay_us(20000);
+    
+    PORTB = 0x03;
+    PORTB |= (1<<LCD_E);
+    PORTB &= ~(1<<LCD_E);
+    delay_us(4100);
+    PORTB = 0x03;
+    PORTB |= (1<<LCD_E);
+    PORTB &= ~(1<<LCD_E);
+    delay_us(100);
+    PORTB = 0x03;
+    PORTB |= (1<<LCD_E);
+    PORTB &= ~(1<<LCD_E);
+    delay_us(100);
+    
+    PORTB = 0x02;
+    PORTB |= (1<<LCD_E);
+    PORTB &= ~(1<<LCD_E);
+    delay_us(100);
+    
+    lcd_command(KS0073_EXTENDED_FUNCTION_REGISTER_ON);
+    lcd_command(KS0073_4LINES_MODE);
+    lcd_command(KS0073_EXTENDED_FUNCTION_REGISTER_OFF);
+    
+    lcd_command(LCD_DISP_OFF);              /* display off                  */
+    lcd_clrscr();                           /* display clear                */ 
+    lcd_command(LCD_MODE_DEFAULT);          /* set entry mode               */
+    lcd_command(0x0F);                      /* display/cursor control       */
+    //lcd_command(LCD_DISP_ON);              /* display off                  */
+    
+    //lcd_init(0x24);
+    //lcd_init(0x0F);
 
     /****************************
      * Startup                  *
@@ -61,6 +111,8 @@ int main(void) {
                 uart_puts(buf_s);
                 uart_puts_P(PSTR(" pressed."));
                 uart_puts_P(PSTR(CR));
+                
+                // port_b_setpin(4, 1);
             }
         } else {
             uint8_t btn = button_read();
@@ -71,6 +123,8 @@ int main(void) {
                 uart_puts(buf_s);
                 uart_puts_P(PSTR(" released."));
                 uart_puts_P(PSTR(CR));
+                
+                // port_b_setpin(4, 0);
             }
             button = btn;
         }

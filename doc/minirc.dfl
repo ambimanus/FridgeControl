@@ -7,4 +7,4 @@ pu minit
 pu mreset           
 pu rtscts           No 
 pu xonxoff          Yes
-pu localecho        No
+pu localecho        Yes

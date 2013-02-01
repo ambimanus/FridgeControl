@@ -40,10 +40,11 @@ FORMAT = ihex
 
 # Target file name (without extension).
 TARGET = main
+#TARGET = test_lcd
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c util/uart.c util/fifo.c util/myavr.c util/rtc.c util/ds18s20.c util/random.c
+SRC = $(TARGET).c util/uart.c util/fifo.c util/myavr.c util/rtc.c util/ds18s20.c util/random.c util/lcd.c
 
 
 # List Assembler source files here.

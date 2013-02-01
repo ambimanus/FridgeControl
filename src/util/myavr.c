@@ -9,23 +9,23 @@ void port_a_setpin(const uint8_t pin, const uint8_t high) {
 
 void port_b_setpin(const uint8_t pin, const uint8_t high) {
     if (high)
-        PORTA |= (1 << pin); //set PORTA.pin high
+        PORTB |= (1 << pin); //set PORTB.pin high
     else
-        PORTA &= ~(1 << pin); //set PORTA.pin low
+        PORTB &= ~(1 << pin); //set PORTB.pin low
 }
 
 void port_c_setpin(const uint8_t pin, const uint8_t high) {
     if (high)
-        PORTA |= (1 << pin); //set PORTA.pin high
+        PORTC |= (1 << pin); //set PORTC.pin high
     else
-        PORTA &= ~(1 << pin); //set PORTA.pin low
+        PORTC &= ~(1 << pin); //set PORTC.pin low
 }
 
 void port_d_setpin(const uint8_t pin, const uint8_t high) {
     if (high)
-        PORTA |= (1 << pin); //set PORTA.pin high
+        PORTD |= (1 << pin); //set PORTD.pin high
     else
-        PORTA &= ~(1 << pin); //set PORTA.pin low
+        PORTD &= ~(1 << pin); //set PORTD.pin low
 }
 
 void relais_init(void) {
@@ -115,6 +115,18 @@ void speaker_init() {
     SPEAKER_PORT &= ~(1 << SPEAKER_PIN);
 }
 
+void delay_ms(uint32_t count) {
+  while(count--) {
+    _delay_ms(1);
+  }
+}
+
+void delay_us(uint32_t count) {
+  while(count--) {
+    _delay_us(1);
+  }
+} 
+
 void speaker_sound(uint16_t f, uint16_t dur) {
     uint32_t cycles;
     // holdtime in us
@@ -124,9 +136,9 @@ void speaker_sound(uint16_t f, uint16_t dur) {
 
     for (uint32_t i = 0; i < cycles; i++) {
         SPEAKER_PORT |= (1 << SPEAKER_PIN);
-        _delay_us(holdtime);
+        delay_us(holdtime);
         SPEAKER_PORT &= ~(1 << SPEAKER_PIN);
-        _delay_us(holdtime);
+        delay_us(holdtime);
     }
 }
 
